@@ -130,9 +130,12 @@ body {
   color: var(--text);
   font-family: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  transition:
-    background-color var(--motion) var(--ease),
-    color var(--motion) var(--ease);
+  /* Deliberately no transition on the page ground.
+     Mode is resolved before first paint (see the bootstrap script in
+     app/layout.tsx), so a mode change is a navigation, not a live toggle —
+     there is nothing to cross-fade. Transitioning it also breaks: --motion
+     and --ease change in the same style recalculation as --bg, which stalls
+     the transition and leaves the old colour painted indefinitely. */
 }
 
 /* Every rate, fee, amount, timestamp and ID renders here. Monospaced,
