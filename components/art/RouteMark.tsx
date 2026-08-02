@@ -1,15 +1,21 @@
 /**
  * RouteMark — the logo.
  *
- * One continuous stroke travelling left to right through exactly three nodes,
- * with a single gentle bend. The minimality is the message: the fewest hops
- * between origin and destination.
+ * Geometry is taken verbatim from the transaction-flow prototypes
+ * (`M6 30 L30 30 L54 6` in a 60×36 box): one continuous stroke left to right
+ * with a single bend. The minimality is the message — the fewest hops between
+ * origin and destination.
+ *
+ * The prototypes drew two nodes; §6.2 calls for three, the middle one in
+ * Signal Teal. Both are satisfied by putting the third node on the elbow at
+ * (30,30), which the path already passes through. Nothing about the mark's
+ * shape changes, and the teal node lands exactly on the single intermediary —
+ * the one thing this product claims to have fewer of, and so the one thing
+ * the logo colours as live.
  *
  * Outer nodes carry the brand colour via --mark (Deep Route Blue on light
  * grounds, a lighter tint of the same hue on the dark institutional ground,
- * where #1B3A6B would be invisible). The middle node is Signal Teal — the
- * intermediary is the one thing ClearRoute claims to have fewer of, so it is
- * the one thing the mark colours as live.
+ * where #1B3A6B would be invisible).
  *
  * Also used as the rating glyph, the favicon, and the video end-frame.
  */
@@ -28,18 +34,14 @@ export function RouteMark({
   /** True when adjacent text already names the thing — hides it from AT. */
   decorative?: boolean;
 }) {
-  // Geometry lives in a 40×24 box. The stroke is a single quadratic, so there
-  // is exactly one bend; the middle node sits on the curve at t=0.5, which is
-  // (20, 8.5) for these control points — computed, not eyeballed, so the node
-  // never floats off the line at any size.
   const a11y = decorative
     ? { "aria-hidden": true as const }
     : { role: "img" as const, "aria-label": title };
 
   return (
     <svg
-      viewBox="0 0 40 24"
-      width={(size * 40) / 24}
+      viewBox="0 0 60 36"
+      width={(size * 60) / 36}
       height={size}
       fill="none"
       className={className}
@@ -47,14 +49,15 @@ export function RouteMark({
     >
       {!decorative && <title>{title}</title>}
       <path
-        d="M4 17 Q20 5 36 7"
+        d="M6 30 L30 30 L54 6"
         stroke="var(--accent)"
-        strokeWidth="2"
+        strokeWidth="3"
         strokeLinecap="round"
+        strokeLinejoin="round"
       />
-      <circle cx="4" cy="17" r="3" fill="var(--mark)" />
-      <circle cx="20" cy="8.5" r="3" fill="var(--accent)" />
-      <circle cx="36" cy="7" r="3" fill="var(--mark)" />
+      <circle cx="6" cy="30" r="4" fill="var(--mark)" />
+      <circle cx="30" cy="30" r="4" fill="var(--accent)" />
+      <circle cx="54" cy="6" r="4" fill="var(--mark)" />
     </svg>
   );
 }

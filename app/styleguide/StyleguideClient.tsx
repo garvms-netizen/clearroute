@@ -6,6 +6,14 @@ import { OFFER_TERMS, OFFER_HEADLINE, OFFER_NO_PRESSURE } from "@/lib/copy";
 
 import { RouteMark } from "@/components/art/RouteMark";
 import { Wordmark } from "@/components/art/Wordmark";
+import { RouteContrast } from "@/components/art/RouteContrast";
+import { GlobeConnection } from "@/components/art/GlobeConnection";
+import { FeeStack } from "@/components/art/FeeStack";
+import { SpeedContrast } from "@/components/art/SpeedContrast";
+import { TransferTimeline } from "@/components/art/TransferTimeline";
+import { PersonaRohan, PersonaPriya } from "@/components/art/Personas";
+import { WorldPresence } from "@/components/art/WorldPresence";
+import { SecurityShield } from "@/components/art/SecurityShield";
 import { Accordion } from "@/components/ui/Accordion";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
@@ -116,6 +124,58 @@ export function StyleguideClient() {
                   <Rating value={5} />
                   <Rating value={4} />
                 </div>
+              </div>
+            )}
+          </Both>
+        </Spec>
+
+        <Spec
+          name="Art · full size"
+          note="every graphic reads CSS custom properties — no hex, no second export, no text inside any SVG"
+        >
+          <Both>
+            {(m) => (
+              <div className="space-y-6">
+                <RouteContrast animate={m === "personal"} />
+                <GlobeConnection />
+                <WorldPresence />
+                <div className="flex flex-wrap items-end gap-8">
+                  <FeeStack className="h-40" />
+                  <SpeedContrast className="h-28" />
+                  <TransferTimeline className="h-44" />
+                  <SecurityShield className="h-40" />
+                </div>
+                <div className="flex flex-wrap gap-6">
+                  <PersonaRohan className="w-56" />
+                  <PersonaPriya className="w-56" />
+                </div>
+              </div>
+            )}
+          </Both>
+        </Spec>
+
+        <Spec
+          name="Art · 120px legibility check"
+          note="§6.3 requires every graphic to read clearly at 120px wide"
+        >
+          <Both>
+            {() => (
+              <div className="flex flex-wrap items-end gap-4">
+                {[
+                  <RouteContrast key="rc" decorative />,
+                  <GlobeConnection key="gc" decorative />,
+                  <WorldPresence key="wp" decorative />,
+                  <FeeStack key="fs" decorative />,
+                  <SpeedContrast key="sc" decorative />,
+                  <TransferTimeline key="tt" decorative />,
+                  <SecurityShield key="ss" decorative />,
+                  <PersonaRohan key="pr" decorative />,
+                  <PersonaPriya key="pp" decorative />,
+                ].map((node, i) => (
+                  <div key={i} style={{ width: 120 }}>
+                    {node}
+                  </div>
+                ))}
               </div>
             )}
           </Both>
