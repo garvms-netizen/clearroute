@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, IBM_Plex_Mono } from "next/font/google";
 import { ModeProvider } from "@/components/ModeProvider";
+import { SiteChrome } from "@/components/shell/SiteChrome";
 import "./globals.css";
 
 const inter = Inter({
@@ -77,7 +78,9 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: MODE_BOOTSTRAP }} />
       </head>
       <body className="min-h-full flex flex-col">
-        <ModeProvider>{children}</ModeProvider>
+        <ModeProvider>
+          <SiteChrome>{children}</SiteChrome>
+        </ModeProvider>
       </body>
     </html>
   );

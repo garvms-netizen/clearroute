@@ -1,0 +1,8 @@
+# Normalise line endings on commit. Without this, every file written on
+# Windows reports a CRLF warning on `git add`, which buries real output.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.ico binary
+*.mp4 binary
+*.woff2 binary
