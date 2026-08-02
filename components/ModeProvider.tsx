@@ -6,7 +6,7 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useState,
+  useSyncExternalStore,
 } from "react";
 import { usePathname } from "next/navigation";
 import {
@@ -14,7 +14,9 @@ import {
   isForkPath,
   modeFromPath,
   readStoredMode,
+  readStoredModeServer,
   storeMode,
+  subscribeStoredMode,
   type Mode,
 } from "@/lib/mode";
 
@@ -23,7 +25,7 @@ type ModeContextValue = {
   mode: Mode;
   /** True on `/` only, where no mode is applied to <html>. */
   isFork: boolean;
-  /** True once the persisted choice has been read from localStorage. */
+  /** True once the persisted choice has been read in the browser. */
   hydrated: boolean;
   /** The visitor's previous choice, or null on a first visit. */
   storedMode: Mode | null;
@@ -33,48 +35,49 @@ type ModeContextValue = {
 
 const ModeContext = createContext<ModeContextValue | null>(null);
 
+const subscribeNever = () => () => {};
+
 export function ModeProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname() ?? "/";
   const routeMode = modeFromPath(pathname);
   const fork = isForkPath(pathname);
 
-  // Shared routes fall back to the persisted choice, but that can only be read
-  // in the browser. Initialising to DEFAULT_MODE keeps the first client render
-  // identical to the prerendered HTML; the effect below corrects it a tick
-  // later. The <html data-mode> attribute is already correct by then, because
-  // the pre-paint script in app/layout.tsx set it before anything painted — so
-  // the correction is a content swap, never a colour flash.
-  const [storedMode, setStoredMode] = useState<Mode | null>(null);
-  const [hydrated, setHydrated] = useState(false);
+  // Reading localStorage through useSyncExternalStore rather than an effect:
+  // the server snapshot is null, the client snapshot is the real value, and
+  // React handles the changeover without a cascading re-render. It also picks
+  // up a write from another tab for free.
+  const storedMode = useSyncExternalStore(
+    subscribeStoredMode,
+    readStoredMode,
+    readStoredModeServer,
+  );
 
-  useEffect(() => {
-    setStoredMode(readStoredMode());
-    setHydrated(true);
-  }, []);
+  const hydrated = useSyncExternalStore(
+    subscribeNever,
+    () => true,
+    () => false,
+  );
 
   const mode: Mode = routeMode ?? storedMode ?? DEFAULT_MODE;
 
   // Keep <html data-mode> in step with client-side navigation. The pre-paint
-  // script only runs on a full page load.
+  // script in app/layout.tsx only runs on a full page load, so without this a
+  // soft navigation from /pricing to /personal would keep the old palette.
   useEffect(() => {
     const el = document.documentElement;
     if (fork) el.removeAttribute("data-mode");
     else el.setAttribute("data-mode", mode);
   }, [fork, mode]);
 
-  // A route that pins a mode is itself a choice — landing on /personal from a
-  // shared link should be what a shared route remembers afterwards.
+  // A route that pins a mode is itself a choice — arriving at /personal from a
+  // shared link should be what shared routes remember afterwards. This writes
+  // to an external system, which is what an effect is actually for; the store
+  // notifies its own subscribers, so there is no setState here.
   useEffect(() => {
-    if (routeMode) {
-      storeMode(routeMode);
-      setStoredMode(routeMode);
-    }
+    if (routeMode) storeMode(routeMode);
   }, [routeMode]);
 
-  const choose = useCallback((next: Mode) => {
-    storeMode(next);
-    setStoredMode(next);
-  }, []);
+  const choose = useCallback((next: Mode) => storeMode(next), []);
 
   const value = useMemo(
     () => ({ mode, isFork: fork, hydrated, storedMode, choose }),

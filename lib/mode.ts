@@ -47,6 +47,17 @@ export function isForkPath(pathname: string): boolean {
   return p === "/" || p === "";
 }
 
+/* --------------------------------------------------------------------------
+   The persisted choice, modelled as an external store.
+
+   localStorage is exactly the kind of thing useSyncExternalStore is for: it
+   lives outside React, it can change in another tab, and reading it during
+   render would break hydration. Exposing subscribe/read here lets the
+   provider consume it without a setState-in-effect cascade.
+   -------------------------------------------------------------------------- */
+
+const listeners = new Set<() => void>();
+
 export function readStoredMode(): Mode | null {
   if (typeof window === "undefined") return null;
   try {
@@ -57,6 +68,21 @@ export function readStoredMode(): Mode | null {
   }
 }
 
+/** Server snapshot: nothing is persisted during prerender, by definition. */
+export function readStoredModeServer(): Mode | null {
+  return null;
+}
+
+export function subscribeStoredMode(onChange: () => void): () => void {
+  listeners.add(onChange);
+  // Fires when another tab writes — keeps two open tabs in agreement.
+  window.addEventListener("storage", onChange);
+  return () => {
+    listeners.delete(onChange);
+    window.removeEventListener("storage", onChange);
+  };
+}
+
 export function storeMode(mode: Mode): void {
   if (typeof window === "undefined") return;
   try {
@@ -64,6 +90,8 @@ export function storeMode(mode: Mode): void {
   } catch {
     /* no-op */
   }
+  // `storage` doesn't fire in the tab that wrote, so notify locally.
+  listeners.forEach((l) => l());
 }
 
 export const otherMode = (m: Mode): Mode =>

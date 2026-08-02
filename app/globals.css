@@ -20,6 +20,31 @@
   --highlight: #f4a340; /* the zero-markup offer ONLY, once per page */
   --warm: #e8935c; /* terracotta — illustration fills ONLY, never CTAs */
 
+  /* --- Ink variants. -----------------------------------------------------
+     Signal Teal and Amber are specified as fill colours and they work as
+     fills: on the dark institutional ground they clear AA as text too
+     (7.5:1 and 9.1:1). On the warm personal ground they do not — teal text
+     lands at 2.3:1 and amber at 1.9:1, both far below the 4.5:1 floor for
+     body copy.
+
+     So the palette splits by role rather than being changed: --accent and
+     --highlight keep their exact specified values and are used for fills,
+     borders, dots, rules and SVG strokes, where the 3:1 non-text threshold
+     applies. --accent-ink and --highlight-ink are the same hues darkened
+     only as far as AA requires, and are used wherever the colour becomes
+     small text. Identical in institutional mode, where no change is needed. */
+  --accent-ink: var(--accent);
+  --highlight-ink: var(--highlight);
+
+  /* Deep Route Blue as an *ink* colour.
+     The brand blue is a ground colour, not a mark colour: #1B3A6B on the
+     institutional ground (#0B1220) is about 1.6:1, so RouteMark's outer nodes
+     would be invisible in the header. This token stays Deep Route Blue
+     wherever the ground is light, and becomes a lighter tint of the same hue
+     on the dark ground so the mark clears AA. Same hue family, same identity,
+     legible in both modes. Used only where brand colour meets a surface. */
+  --mark: var(--brand);
+
   /* --- Entry fork (`/`) defaults: no mode applied. ---------------------- */
   /* The fork renders on the Deep Route Blue field with off-white type, so
      the visitor sees the brand before they see either expression of it. */
@@ -55,6 +80,7 @@
   --line: #223049; /* hairline rules — 1px, used liberally */
   --text: #e4e9f2;
   --text-dim: #8b99b0; /* labels, captions */
+  --mark: #5b84c4; /* Deep Route Blue, lightened to clear AA on the dark ground */
 
   --radius: 2px; /* sharp */
   --radius-lg: 3px;
@@ -76,7 +102,14 @@
   --surface-2: #f4efe8;
   --line: #e6dcd0;
   --text: #1b3a6b; /* Deep Route Blue as text — ties to the spine */
-  --text-dim: #6b7a90;
+  /* Specified as #6B7A90, which lands at 4.09:1 on this ground and 3.82:1 on
+     --surface-2 — below the 4.5:1 floor for the captions and labels it is
+     used for. Darkened along the same hue to 5.28:1 / 4.92:1. */
+  --text-dim: #5a6880;
+  /* Signal Teal and Amber, darkened only as far as AA requires. Used for
+     text; the undarkened tokens still carry every fill and border. */
+  --accent-ink: #007a72; /* 4.89:1 on --bg */
+  --highlight-ink: #a85f12; /* 4.56:1 on --bg */
 
   --radius: 16px;
   --radius-lg: 24px;
@@ -107,6 +140,9 @@
   --color-accent-dim: var(--accent-dim);
   --color-highlight: var(--highlight);
   --color-warm: var(--warm);
+  --color-mark: var(--mark);
+  --color-accent-ink: var(--accent-ink);
+  --color-highlight-ink: var(--highlight-ink);
 
   --radius-mode: var(--radius);
   --radius-mode-lg: var(--radius-lg);
