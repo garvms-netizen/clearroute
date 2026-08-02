@@ -1,14 +1,18 @@
 import type { Metadata } from "next";
-import { PageStub } from "@/components/shell/PageStub";
+import { HomePage } from "@/components/home/HomePage";
 
-export const metadata: Metadata = { title: "Institutional" };
+export const metadata: Metadata = {
+  title: "For businesses — cross-border payments with a visible route",
+  description:
+    "Vendor payments, subsidiary funding and contractor payouts with live locked rates, minimal intermediaries and an exportable transaction map.",
+  keywords: [
+    "business forex transfer India",
+    "SWIFT alternative for SMEs",
+    "reduce forex markup company payments",
+    "vendor payment cross border India",
+  ],
+};
 
-export default function Page() {
-  return (
-    <PageStub
-      eyebrow="CROSS-BORDER PAYMENTS · INDIA OUTBOUND"
-      title="See every step your money takes. Every time."
-      stage="Stage 4"
-    />
-  );
+export default function InstitutionalHome() {
+  return <HomePage mode="institutional" />;
 }

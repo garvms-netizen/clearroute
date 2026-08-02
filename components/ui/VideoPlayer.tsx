@@ -62,7 +62,7 @@ export function VideoPlayer({
     return (
       <div
         className={cn(
-          "flex aspect-video w-full flex-col items-center justify-center gap-3 border border-dashed p-6 text-center",
+          "flex aspect-video w-full min-w-0 flex-col items-center justify-center gap-3 border border-dashed p-6 text-center",
           className,
         )}
         style={{
@@ -71,8 +71,11 @@ export function VideoPlayer({
           background: "var(--surface-2)",
         }}
       >
+        {/* max-w in rem would exceed the content box at 360px and, because
+            grid items default to min-width:auto, drag the whole track wider
+            than the viewport. Capped against the container instead. */}
         {poster && (
-          <div className="w-full max-w-sm opacity-40" aria-hidden="true">
+          <div className="w-full max-w-[24rem] opacity-40" aria-hidden="true">
             {poster}
           </div>
         )}

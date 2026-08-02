@@ -84,6 +84,8 @@ type AnchorProps = CommonProps & {
   /** Internal routes go through next/link so basePath is applied. */
   href: string;
   external?: boolean;
+  /** Used for analytics on CTA links; never to block navigation. */
+  onClick?: React.MouseEventHandler<HTMLAnchorElement>;
 };
 
 export function Button(props: ButtonProps | AnchorProps) {
@@ -92,14 +94,14 @@ export function Button(props: ButtonProps | AnchorProps) {
   const style = styleFor(variant);
 
   if ("href" in props && props.href !== undefined) {
-    const { href, external, ...rest } = props as AnchorProps;
-    void rest;
+    const { href, external, onClick } = props as AnchorProps;
     if (external) {
       return (
         <a
           href={href}
           className={classes}
           style={style}
+          onClick={onClick}
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -108,7 +110,7 @@ export function Button(props: ButtonProps | AnchorProps) {
       );
     }
     return (
-      <Link href={href} className={classes} style={style}>
+      <Link href={href} className={classes} style={style} onClick={onClick}>
         {children}
       </Link>
     );
