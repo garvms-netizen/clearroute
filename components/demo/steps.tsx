@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { Callout } from "@/components/ui/Callout";
 import { DataList, DataRow } from "@/components/ui/DataRow";
 import { StatTile } from "@/components/ui/StatTile";
-import { TransactionMap } from "./TransactionMap";
+import { LiveSettlement } from "./LiveSettlement";
 import {
   formatMoney,
   formatRate,
@@ -372,24 +372,14 @@ export function StepSecondLeg({ t }: { t: T }) {
 
 export function StepWatch({ t, mode }: { t: T; mode: Mode }) {
   return (
-    <div className="grid gap-8 lg:grid-cols-[1.3fr_1fr]">
-      <div>
-        <TransactionMap mode={mode} elapsed={t.elapsed} />
-      </div>
-      <div>
-        <Callout>
-          {mode === "institutional"
-            ? "Every timestamp above is recorded and exportable — the audit trail your finance team or auditor can actually work from."
-            : "Every step is saved, so you always know exactly where your money is."}
-        </Callout>
+    <div>
+      {/* The settlement runs live the moment this step opens, so the claim
+          that a transfer is visible the whole way is demonstrated rather than
+          asserted. */}
+      <LiveSettlement mode={mode} />
 
-        <p className="mono mt-5 text-[11px] leading-relaxed" style={{ color: "var(--text-dim)" }}>
-          The counter on the in-progress row measures elapsed time on this
-          page. It is the only figure here that moves, and it moves because
-          time does — nothing on this page simulates market movement.
-        </p>
-
-        <Button variant="secondary" className="mt-6" onClick={t.reset}>
+      <div className="mt-8">
+        <Button variant="secondary" onClick={t.reset}>
           Start over
         </Button>
       </div>

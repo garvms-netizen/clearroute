@@ -51,9 +51,12 @@ export function StatusStrip() {
           const change = changeVsPreviousClose(c);
 
           return (
+            // min-w has to clear the cell's actual content, not a guess at it.
+            // At 210px the content measured 304–311px, so the change figure
+            // spilled out of the cell and landed on top of the next one.
             <div
               key={c}
-              className="flex min-w-[210px] flex-1 items-center gap-2.5 border-r px-4 py-2 sm:px-5"
+              className="flex min-w-[300px] flex-1 items-center gap-2.5 border-r px-4 py-2 sm:px-5"
               style={{ borderColor: "var(--line)" }}
             >
               <span
@@ -69,7 +72,7 @@ export function StatusStrip() {
               </span>
 
               {bars.length > 1 && (
-                <Sparkline closes={bars.slice(-72)} className="shrink-0" />
+                <Sparkline closes={bars.slice(-72)} width={54} className="shrink-0" />
               )}
 
               <span className="ml-auto flex shrink-0 items-baseline gap-2">
@@ -101,13 +104,16 @@ export function StatusStrip() {
           );
         })}
 
+        {/* Shortened and moved to xl. The long form ran to 426px, which left
+            the three cells too little room and forced their content to spill
+            over each other. */}
         <p
-          className="mono hidden shrink-0 items-center px-4 py-2 text-[10px] tracking-[0.08em] uppercase lg:flex"
+          className="mono hidden shrink-0 items-center px-4 py-2 text-[10px] tracking-[0.08em] uppercase xl:flex"
           style={{ color: "var(--text-dim)" }}
         >
           {hasLiveData
-            ? `Yahoo Finance · as of ${formatRateTime(latestStamp)} · vs previous close`
-            : "Sample rates · no published data available"}
+            ? `Yahoo Finance · ${formatRateTime(latestStamp)}`
+            : "Sample rates · unavailable"}
         </p>
       </div>
     </div>

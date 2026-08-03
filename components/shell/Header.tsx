@@ -58,12 +58,16 @@ export function Header() {
 
   return (
     <>
+      {/* Opaque, not translucent.
+          §5.1 asks for backdrop blur, and an 88%-opaque header with blur(8px)
+          looked right on a sparse page — but on the dense institutional pages
+          body text scrolling underneath reads straight through the nav, so
+          headings visibly collide with the wordmark and links. Blur softens
+          what is behind; it does not hide it. Legibility of the navigation
+          wins over the effect. */}
       <header
-        className="sticky top-0 z-40 border-b backdrop-blur"
-        style={{
-          background: "color-mix(in srgb, var(--surface) 88%, transparent)",
-          borderColor: "var(--line)",
-        }}
+        className="sticky top-0 z-40 border-b"
+        style={{ background: "var(--surface)", borderColor: "var(--line)" }}
       >
         <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-4 px-4 sm:px-6">
           <Link

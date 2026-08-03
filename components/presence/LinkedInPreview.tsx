@@ -1,25 +1,18 @@
 "use client";
 
-import { Badge } from "@/components/ui/Badge";
 import { Callout } from "@/components/ui/Callout";
-import { PostCard } from "@/components/ui/PostCard";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Section } from "@/components/home/Section";
-import { RouteContrast } from "@/components/art/RouteContrast";
-import { RouteMark } from "@/components/art/RouteMark";
 import { ConceptNote } from "./ConceptNote";
-import { SlideVisual } from "./SlideVisual";
-import { LI_POSTS, LI_PROFILE, LI_USAGE_NOTE } from "@/lib/campaign";
-
-const POST_VISUALS = ["feestack", "route", "phone"] as const;
+import { LinkedInApp } from "./platform/LinkedInApp";
+import { LI_USAGE_NOTE } from "@/lib/campaign";
 
 /**
- * A generic company page and feed.
+ * The LinkedIn channel page.
  *
- * No LinkedIn logo, no clone of its interface. The banner is RouteContrast,
- * the avatar is the RouteMark, and PostCard supplies the frame — the same
- * component the paid-social previews use, because these are Clear Route's
- * assets in Clear Route's chrome.
+ * The mockup is a platform-accurate desktop screen (see platform/LinkedInApp)
+ * rather than the posts restyled in Clear Route's palette — the point of a
+ * channel preview is to show the asset where it will actually be read.
  */
 export function LinkedInPreview() {
   return (
@@ -34,97 +27,14 @@ export function LinkedInPreview() {
         <div className="mt-8">
           <ConceptNote channel="LinkedIn" />
         </div>
+        <Callout className="mt-5">{LI_USAGE_NOTE}</Callout>
       </div>
 
-      <Section labelledBy="company-page">
-        <h2 id="company-page" className="sr-only">
-          Company page preview
+      <Section labelledBy="li-mockup">
+        <h2 id="li-mockup" className="sr-only">
+          LinkedIn company page mockup
         </h2>
-
-        {/* Company header */}
-        <div
-          className="overflow-hidden border"
-          style={{
-            background: "var(--surface)",
-            borderColor: "var(--line)",
-            borderRadius: "var(--radius-lg)",
-          }}
-        >
-          <div
-            className="flex h-32 items-center justify-center overflow-hidden sm:h-40"
-            style={{ background: "var(--surface-2)", borderBottom: "1px solid var(--line)" }}
-          >
-            <RouteContrast className="w-full" decorative />
-          </div>
-
-          <div className="flex flex-wrap items-end gap-4 p-5">
-            <span
-              className="-mt-12 flex h-20 w-20 shrink-0 items-center justify-center border-4"
-              style={{
-                background: "var(--brand)",
-                borderColor: "var(--surface)",
-                borderRadius: "var(--radius)",
-              }}
-            >
-              <RouteMark size={30} decorative />
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="text-[18px] font-semibold" style={{ color: "var(--text)" }}>
-                {LI_PROFILE.name}
-              </p>
-              <p className="text-[13px]" style={{ color: "var(--text-dim)" }}>
-                {LI_PROFILE.descriptor}
-              </p>
-              <p className="mono mt-0.5 text-[11px]" style={{ color: "var(--text-dim)" }}>
-                {LI_PROFILE.followers}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <Callout className="mt-6">{LI_USAGE_NOTE}</Callout>
-      </Section>
-
-      {/* Feed */}
-      <Section labelledBy="feed">
-        <SectionHeader id="feed" eyebrow="THE FEED" title="Posts in running order" />
-
-        <div className="mt-8 grid gap-6 lg:grid-cols-3">
-          {LI_POSTS.map((post, i) => (
-            <div key={post.id}>
-              <div className="mb-3 flex flex-wrap items-center gap-2">
-                <span className="mono text-[11px]" style={{ color: "var(--text-dim)" }}>
-                  Post {i + 1}
-                </span>
-                <Badge tone={post.stage === "Interest" ? "warn" : "accent"}>{post.stage}</Badge>
-              </div>
-
-              <PostCard
-                meta={LI_PROFILE.descriptor}
-                reactions={post.reactions}
-                comments={post.comments}
-                topComment={post.prompt}
-                visual={
-                  <div className="flex items-center justify-center px-6 py-6">
-                    <SlideVisual kind={POST_VISUALS[i] ?? "route"} className="h-28" />
-                  </div>
-                }
-                body={
-                  <>
-                    {post.body.map((para) => (
-                      <p key={para.slice(0, 24)} style={{ whiteSpace: "pre-line" }}>
-                        {para}
-                      </p>
-                    ))}
-                    <p className="mono pt-1 text-[11px]" style={{ color: "var(--accent-ink)" }}>
-                      {post.tags.map((t) => `#${t}`).join("  ")}
-                    </p>
-                  </>
-                }
-              />
-            </div>
-          ))}
-        </div>
+        <LinkedInApp />
       </Section>
     </>
   );
