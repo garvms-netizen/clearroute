@@ -127,17 +127,17 @@ export function StepRoute({ t, mode }: { t: T; mode: Mode }) {
         <p className="mono mt-4 text-[11px] leading-relaxed" style={{ color: "var(--text-dim)" }}>
           {t.isWorkedExample ? (
             <>
-              Worked example at the brief&rsquo;s illustrative rate, so these
-              figures match /pricing exactly. Change the amount or currency to
-              quote from today&rsquo;s live reference instead.
+              Worked example at the illustrative rate, so these figures match
+              /pricing exactly. Change the amount or currency to quote from the
+              latest published close instead.
             </>
-          ) : t.rateState === "fallback" ? (
-            <>Showing sample rates — live reference unavailable.</>
+          ) : !t.hasLiveData ? (
+            <>Showing sample rates — no published data available.</>
           ) : (
             <>
-              Indicative rate · ECB reference · close{" "}
-              {formatRateDate(t.live.date)}. Published once per working day, not
-              tick-by-tick.
+              Daily close · Yahoo Finance ·{" "}
+              {formatRateDate(t.close.date)}. Published once per trading day,
+              not tick-by-tick.
             </>
           )}
         </p>

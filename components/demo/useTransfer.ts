@@ -3,10 +3,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   CORRIDORS,
-  FALLBACK_RATES,
-  fetchRates,
+  hasLiveData,
+  latestClose,
   type Corridor,
-  type RateSet,
 } from "@/lib/rates";
 import { LEG1_RATE, LEG2_RATE, MARGIN_PCT, SEND_INR } from "@/lib/workedExample";
 
@@ -59,24 +58,12 @@ export function useTransfer() {
   const [amount, setAmount] = useState<number>(SEND_INR);
   const [corridor, setCorridor] = useState<Corridor>("USD");
 
-  const [live, setLive] = useState<RateSet>(FALLBACK_RATES);
-  const [rateState, setRateState] = useState<"loading" | "live" | "fallback">(
-    "loading",
-  );
-
   const [legs, setLegs] = useState<Leg[]>([]);
   const [elapsed, setElapsed] = useState(0);
 
-  useEffect(() => {
-    const ac = new AbortController();
-    fetchRates(ac.signal)
-      .then((r) => {
-        setLive(r);
-        setRateState("live");
-      })
-      .catch(() => setRateState("fallback"));
-    return () => ac.abort();
-  }, []);
+  // Published closes are baked into the build, so they are already correct on
+  // first paint — no fetch, no loading state, no failure state to design for.
+  const close = latestClose(corridor);
 
   /**
    * True while the inputs still match the brief's worked example. The page
@@ -86,7 +73,7 @@ export function useTransfer() {
    */
   const isWorkedExample = amount === SEND_INR && corridor === "USD";
 
-  const quotedRate = isWorkedExample ? LEG1_RATE : live.rates[corridor];
+  const quotedRate = isWorkedExample ? LEG1_RATE : close.rate;
 
   const receiveAmount = useMemo(
     () => Math.round((amount / quotedRate) * 100) / 100,
@@ -166,8 +153,8 @@ export function useTransfer() {
     corridor,
     setCorridor,
     corridors: CORRIDORS,
-    live,
-    rateState,
+    close,
+    hasLiveData,
     quotedRate,
     receiveAmount,
     marginInr,

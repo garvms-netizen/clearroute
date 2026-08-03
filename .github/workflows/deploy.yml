@@ -4,6 +4,14 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+  # Rebuild daily so the FX closes stay current. `npm run prebuild` fetches
+  # them from Yahoo, which cannot be called from the browser (no CORS
+  # headers), so the build is where that data gets in. 06:30 UTC is after the
+  # previous trading day has settled everywhere we quote.
+  #
+  # Free: Actions minutes are unmetered for public repositories.
+  schedule:
+    - cron: "30 6 * * *"
 
 # Allow the workflow to publish to Pages.
 permissions:

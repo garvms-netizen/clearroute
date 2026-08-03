@@ -130,19 +130,71 @@ One-time repo setup: **Settings ▸ Pages ▸ Source = GitHub Actions**.
 
 ---
 
-## Live rate data
+## Exchange rate data
 
-`/{mode}/how-it-works` fetches from `https://api.frankfurter.app/latest` — free,
-no API key, CORS-enabled, ECB-sourced.
+**Source:** Yahoo Finance daily closes (`USDINR=X`, `EURINR=X`, `GBPINR=X`),
+fetched **at build time** by [`scripts/fetch-rates.mjs`](scripts/fetch-rates.mjs)
+into `lib/generated/rates.json`.
 
-ECB reference rates update **once per working day**. The figure is labelled
-*"Indicative rate · ECB reference"* with the date the API reports, and there is
-deliberately no animated ticker implying live market movement. On a product
-whose pitch is rate honesty, a simulated real-time feed would be the one lie
-that undoes the pitch.
+### Why build time, not the browser
 
-If the request fails, the page falls back to static sample figures and says so.
-No endless spinner, no blank figure.
+Yahoo's endpoints send no `Access-Control-Allow-Origin` header, so a browser
+request from the deployed site fails — verified against `query1`, `query2`, the
+v7 quote endpoint and the spark endpoint, all four blocked. That is a *browser*
+restriction, not a server one, so the same request succeeds from Node.
+
+GitHub Actions runs the build on a server, so fetching there needs no CORS
+workaround, no API key and no proxy. Three things fall out of that:
+
+- **No runtime network call** — no spinner, no failure state, nothing for
+  Lighthouse to dock the page for.
+- **Nothing to pay for and nothing to leak** — no key exists.
+- **The cadence matches the data.** These are daily closes; the workflow
+  re-runs on a daily cron, so nothing fresher is being missed.
+
+`lib/generated/rates.json` is **committed**, not gitignored. If Yahoo is
+unreachable at build time the script logs a warning, keeps the last known good
+data, and lets the build continue — it never fails a deploy over a rate lookup.
+
+Refresh locally with:
+
+```bash
+npm run rates
+```
+
+### What the site will not do
+
+Every rate shown is a real published close on a real date, and the date is
+always displayed beside it. Nothing is interpolated, no point is invented for
+days with no print, and **there is no simulated ticker anywhere in this
+project**. The only figure that moves is the elapsed counter on the demo's
+in-progress row, which is honest because it measures time spent on the page
+rather than market movement.
+
+---
+
+## Cost
+
+**This project costs nothing to build, host or run.** Every dependency and
+service is free at the tier used:
+
+| Thing | Cost |
+|---|---|
+| GitHub Pages hosting | Free for public repositories |
+| GitHub Actions (build + daily cron) | Free — minutes are unmetered for public repositories |
+| Yahoo Finance chart endpoint | Free, no key, no account |
+| Google Apps Script + Sheets | Free within standard quotas |
+| Inter + IBM Plex Mono | Open licence, downloaded at build time and **self-hosted** — the deployed site makes no request to Google Fonts |
+| next, react, react-dom, recharts, tailwindcss, typescript, eslint | Open source, MIT/Apache |
+
+There is **no AI API of any kind** in this project — no Anthropic/Claude,
+OpenAI, Gemini, Veo or other model provider. Nothing in the codebase reads an
+API key, and no paid service is called at build time or at runtime.
+
+The deployed site makes exactly **one** category of outbound request, and only
+if you choose to configure it: form submissions and anonymous analytics to your
+own Apps Script endpoint. Leave `NEXT_PUBLIC_SHEETS_ENDPOINT` unset and the
+site makes no external requests at all.
 
 ---
 

@@ -1,18 +1,12 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import { Sparkline } from "@/components/ui/Sparkline";
 import {
+  closesFor,
   CORRIDORS,
   dayChange,
-  FALLBACK_RATES,
-  fetchRateHistory,
-  fetchRates,
   formatRate,
   formatRateDate,
-  type Close,
-  type Corridor,
-  type RateSet,
+  hasLiveData,
+  latestClose,
 } from "@/lib/rates";
 
 /**
@@ -22,46 +16,26 @@ import {
  * teal dot. It is the thesis of the whole site: this company shows you the
  * number before you ask.
  *
- * ## Why the movement here is real
+ * ## Why nothing here fetches, and nothing here moves
  *
- * The prototype this replaces re-jittered each figure every 2.2 seconds with
+ * The data is Yahoo Finance daily closes, baked into the build (see
+ * lib/rates.ts). No request is made from the browser, so the strip is correct
+ * on first paint — no spinner, no layout shift, no failure state.
+ *
+ * The prototype this replaces re-jittered every figure every 2.2 seconds with
  * `rate + rate * (Math.random() - 0.5) * 0.0008`. That looks like a market
- * feed, but ECB reference rates publish once per working day — those digits
- * would have been movement that never happened, on the one claim the entire
- * site rests on.
+ * feed, but these are daily closes: those digits would have been movement
+ * that never happened, on the one claim the entire site rests on.
  *
- * There is no free, keyless, CORS-enabled source of intraday interbank rates,
- * so the alternative isn't "fetch faster". It's to show the movement that
- * genuinely exists: the day-over-day change against the previous published
- * close, and a trend line whose every vertex is a real close on a real date.
- * Both are independently checkable against the ECB. Nothing is interpolated.
+ * The movement shown instead is real — day-over-day change against the
+ * previous published close, and a trend line whose every vertex is an actual
+ * close on an actual date. Both are checkable against Yahoo.
  *
- * Renders fallback figures immediately rather than a spinner, so the strip
- * never appears empty and never shifts layout when the fetch lands.
+ * A server component: it has no state, no effects and no interactivity, so it
+ * ships as markup with no JavaScript attached.
  */
 export function StatusStrip() {
-  const [data, setData] = useState<RateSet>(FALLBACK_RATES);
-  const [history, setHistory] = useState<Record<Corridor, Close[]> | null>(null);
-
-  useEffect(() => {
-    const ac = new AbortController();
-
-    fetchRates(ac.signal)
-      .then(setData)
-      .catch(() => {
-        /* keep the fallback; the label already says which it is */
-      });
-
-    // Separate request, separate failure mode: if history is unavailable the
-    // strip still shows a correct current rate, just without the trend.
-    fetchRateHistory(45, ac.signal)
-      .then((h) => setHistory(h.series))
-      .catch(() => {
-        /* no trend line; the figure stands on its own */
-      });
-
-    return () => ac.abort();
-  }, []);
+  const latestDate = latestClose("USD").date;
 
   return (
     <div
@@ -71,7 +45,7 @@ export function StatusStrip() {
     >
       <div className="mx-auto flex w-full max-w-7xl items-stretch">
         {CORRIDORS.map((c) => {
-          const closes = history?.[c] ?? [];
+          const closes = closesFor(c);
           const change = dayChange(closes);
 
           return (
@@ -101,18 +75,22 @@ export function StatusStrip() {
                   className="mono text-[13px] font-medium"
                   style={{ color: "var(--accent-ink)" }}
                 >
-                  {formatRate(closes.at(-1)?.rate ?? data.rates[c])}
+                  {formatRate(latestClose(c).rate)}
                 </span>
                 {change && (
                   // Direction is a glyph, not a colour. Whether the rupee
-                  // moving is good news depends entirely on which way you're
+                  // moving is good news depends entirely on which way you are
                   // sending, and this site doesn't editorialise about that.
                   <span
                     className="mono text-[10px]"
                     style={{ color: "var(--text-dim)" }}
                     title={`Change from the ${formatRateDate(change.previousDate)} close`}
                   >
-                    {change.direction === "up" ? "▲" : change.direction === "down" ? "▼" : "—"}{" "}
+                    {change.direction === "up"
+                      ? "▲"
+                      : change.direction === "down"
+                        ? "▼"
+                        : "—"}{" "}
                     {Math.abs(change.pct).toFixed(2)}%
                   </span>
                 )}
@@ -125,9 +103,9 @@ export function StatusStrip() {
           className="mono hidden shrink-0 items-center px-4 py-2 text-[10px] tracking-[0.08em] uppercase lg:flex"
           style={{ color: "var(--text-dim)" }}
         >
-          {data.isFallback
-            ? "Sample rates · live reference unavailable"
-            : `ECB reference · close ${formatRateDate(data.date)} · 30-day trend`}
+          {hasLiveData
+            ? `Daily close · ${formatRateDate(latestDate)} · 30-day trend`
+            : "Sample rates · no published data available"}
         </p>
       </div>
     </div>

@@ -42,10 +42,18 @@ export const TESTIMONIAL_DISCLOSURE =
   "representing the target customers this campaign was designed for — they are " +
   "not real customer feedback.";
 
-/** The demo-page data note, §21. */
+/**
+ * The demo-page data note, §21.
+ *
+ * §21 names frankfurter.app as the source. That host fails CORS from a
+ * browser, and the site now uses Yahoo Finance daily closes fetched at build
+ * time instead — so the wording follows the actual source. A disclosure that
+ * names the wrong provider is worse than no disclosure.
+ */
 export const DEMO_DATA_NOTE =
-  "Rates, timestamps and institution names shown are illustrative. Reference " +
-  "rates come from the ECB via frankfurter.app and update once per working day.";
+  "Rates, timestamps and institution names shown are illustrative. Exchange " +
+  "rates are daily closes from Yahoo Finance, captured when this site was " +
+  "last built, and update once per trading day rather than continuously.";
 
 /** The legal-pages banner, §16.5. */
 export const LEGAL_BANNER =

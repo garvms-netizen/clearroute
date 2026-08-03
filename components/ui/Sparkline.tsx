@@ -3,9 +3,9 @@ import type { Close } from "@/lib/rates";
 /**
  * A trend line of real published closes.
  *
- * Every vertex is an actual ECB close on an actual date — no interpolation,
- * no smoothing, no invented points for the days the ECB doesn't publish. The
- * line is drawn straight between consecutive publishing days, which is the
+ * Every vertex is an actual published close on an actual date — no
+ * interpolation, no smoothing, no invented points for days with no print. The
+ * line is drawn straight between consecutive trading days, which is the
  * truthful shape: the rate genuinely has no observed value over a weekend.
  *
  * No text inside the SVG, per §6.3 — the figure and date live in HTML beside
