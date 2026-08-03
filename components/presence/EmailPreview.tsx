@@ -13,7 +13,7 @@ const GROUPS: EmailGroup[] = ["Conversion", "Onboarding", "Retention"];
 
 /**
  * A stylised two-pane inbox — message list on the left, selected message on
- * the right, rendered in a ClearRoute-branded template.
+ * the right, rendered in a Clear Route-branded template.
  *
  * Generic client styling, not a reproduction of any mail provider's UI. Merge
  * fields stay literal ({{first_name}}) because this is a campaign artifact
@@ -127,7 +127,7 @@ export function EmailPreview() {
             })}
           </ul>
 
-          {/* Selected message, in a ClearRoute-branded template */}
+          {/* Selected message, in a Clear Route-branded template */}
           {selected && (
             <div style={{ background: "var(--surface)" }}>
               <div
@@ -142,7 +142,7 @@ export function EmailPreview() {
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block text-[13px] font-semibold" style={{ color: "var(--text)" }}>
-                    ClearRoute
+                    Clear Route
                   </span>
                   <span className="mono block text-[11px]" style={{ color: "var(--text-dim)" }}>
                     hello@clearroute.app → {"{{email}}"}

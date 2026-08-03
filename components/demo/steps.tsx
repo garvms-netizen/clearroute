@@ -198,7 +198,7 @@ export function StepLock({ t }: { t: T }) {
           <DataRow label="You send" value={formatMoney(leg.sendAmount, "INR")} />
           <DataRow label="Exchange rate applied" value={formatRate(leg.rate)} />
           <DataRow
-            label="ClearRoute margin"
+            label="Clear Route margin"
             note={`standard ${MARGIN_PCT.toFixed(2)}%`}
             value={`${formatMoney(0, "INR")} — waived`}
             accent
@@ -236,7 +236,7 @@ export function StepLock({ t }: { t: T }) {
               accent: false,
             },
             {
-              head: "ClearRoute",
+              head: "Clear Route",
               rate: formatRate(leg.rate),
               hops: String(leg.hops),
               time: leg.eta,

@@ -16,7 +16,7 @@ import { track } from "@/lib/track";
  * A generic mobile profile layout inside PhoneFrame, plus a carousel viewer.
  *
  * Nothing here reproduces Instagram's logo, icon set or chrome. The engagement
- * glyphs are drawn from ClearRoute's own route motif — a node for likes, a
+ * glyphs are drawn from Clear Route's own route motif — a node for likes, a
  * bracket for comments, an arrow for shares — for the same reason the frame
  * carries no wordmark: this is a preview of our assets, not a copy of someone
  * else's product.
@@ -68,7 +68,7 @@ export function InstagramPreview() {
         </h2>
 
         <div className="grid gap-10 lg:grid-cols-[auto_1fr] lg:items-start">
-          <PhoneFrame width={320} statusLabel="clearroute">
+          <PhoneFrame width={320} statusLabel="Clear Route">
             <div className="px-4 pt-4 pb-2">
               {/* Profile header */}
               <div className="flex items-center gap-4">

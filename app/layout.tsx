@@ -23,12 +23,12 @@ const plexMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "ClearRoute — See every step your money takes. Every time.",
-    template: "%s · ClearRoute",
+    default: "Clear Route — See every step your money takes. Every time.",
+    template: "%s · Clear Route",
   },
   description:
     "Cross-border payments with nothing hidden — live rates, minimal intermediaries, full transaction tracking, and multi-currency transfers in one session.",
-  applicationName: "ClearRoute",
+  applicationName: "Clear Route",
   /**
    * Site-wide noindex while the project is under construction.
    *

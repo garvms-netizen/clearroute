@@ -7,7 +7,7 @@ import { cn } from "@/lib/cn";
  * reused in metadata and in the legal pages without drifting.
  */
 export const DISCLAIMER_TEXT =
-  "ClearRoute is a fictional company created for an academic marketing project. " +
+  "Clear Route is a fictional company created for an academic marketing project. " +
   "It is not a real financial services provider, is not licensed or regulated, " +
   "and does not process real transactions. Do not submit sensitive financial information.";
 

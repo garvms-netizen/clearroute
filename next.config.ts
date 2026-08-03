@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 /**
- * ClearRoute — static export targeting GitHub Pages.
+ * Clear Route — static export targeting GitHub Pages.
  *
  * There is no server. Every route is prerendered to `out/` at build time and
  * served as flat files, so anything dynamic must run in the browser or hit an

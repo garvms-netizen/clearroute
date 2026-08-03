@@ -101,7 +101,7 @@ export function StyleguideClient() {
             Internal · not linked from navigation · noindex
           </p>
           <h1 className="mt-2 text-2xl font-semibold text-white">
-            ClearRoute component styleguide
+            Clear Route component styleguide
           </h1>
           <p className="mt-2 max-w-2xl text-sm text-neutral-400">
             Every component from §5.3 rendered in both modes. Each pair below is
@@ -256,7 +256,7 @@ export function StyleguideClient() {
                 <DataRow label="You send" value="₹5,00,000.00" />
                 <DataRow label="Exchange rate applied" value="83.4210" />
                 <DataRow
-                  label="ClearRoute margin"
+                  label="Clear Route margin"
                   note="standard 0.40%"
                   value="₹0.00 — waived"
                   accent
@@ -286,7 +286,7 @@ export function StyleguideClient() {
                   </span>
                 </Callout>
                 <Callout variant="project-note">
-                  ClearRoute is fictional and holds no licence. In a real
+                  Clear Route is fictional and holds no licence. In a real
                   deployment every field above must contain the actual licence
                   type, issuing regulator and registration number, verifiable
                   independently.
@@ -368,7 +368,7 @@ export function StyleguideClient() {
                     id: `sg-${m}-receiving-fees`,
                     question: "Are there receiving fees?",
                     answer:
-                      "Network and correspondent fees are absorbed by ClearRoute. A recipient's own bank may apply its own charge, which we show as an estimate before you send.",
+                      "Network and correspondent fees are absorbed by Clear Route. A recipient's own bank may apply its own charge, which we show as an estimate before you send.",
                   },
                 ]}
               />
@@ -395,7 +395,7 @@ export function StyleguideClient() {
         <Spec name="PhoneFrame" note="generic device shell — no manufacturer likeness">
           <Both>
             {() => (
-              <PhoneFrame width={260} statusLabel="clearroute">
+              <PhoneFrame width={260} statusLabel="Clear Route">
                 <div className="space-y-3 p-4">
                   <div className="flex items-center gap-3">
                     <span

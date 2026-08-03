@@ -360,7 +360,7 @@ export function HomePage({ mode }: { mode: Mode }) {
         <div className="mt-6">
           <Callout variant="project-note">
             These are written personas representing the target customers this
-            campaign was designed for, not real customer feedback. ClearRoute is
+            campaign was designed for, not real customer feedback. Clear Route is
             a fictional company built for an academic marketing project.
           </Callout>
         </div>

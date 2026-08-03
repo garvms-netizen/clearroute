@@ -55,7 +55,7 @@ export function PricingPage() {
             <SectionHeader id="model" eyebrow="THE MODEL" title="What you pay" />
             <DataList className="mt-6">
               <DataRow
-                label="ClearRoute margin"
+                label="Clear Route margin"
                 note="of the send amount"
                 value={`${MARGIN_PCT.toFixed(2)}%`}
                 accent
@@ -81,7 +81,7 @@ export function PricingPage() {
               <DataRow label="You send" value={formatMoney(SEND_INR, "INR")} />
               <DataRow label="Exchange rate applied" value={formatRate(LEG1_RATE)} />
               <DataRow
-                label="ClearRoute margin"
+                label="Clear Route margin"
                 note={`standard ${MARGIN_PCT.toFixed(2)}% — ${formatMoney(MARGIN_INR, "INR")}`}
                 value={`${formatMoney(0, "INR")} — waived`}
                 accent
@@ -107,7 +107,7 @@ export function PricingPage() {
           id="comparison"
           eyebrow="COMPARISON"
           title="The same rupees, two routes."
-          lede="A typical bank route against ClearRoute on an identical transfer. We never name a competitor — the comparison is to the ordinary path money takes."
+          lede="A typical bank route against Clear Route on an identical transfer. We never name a competitor — the comparison is to the ordinary path money takes."
         />
 
         <div
@@ -124,7 +124,7 @@ export function PricingPage() {
               accent: false,
             },
             {
-              head: "ClearRoute",
+              head: "Clear Route",
               rate: formatRate(LEG1_RATE),
               hops: String(HOPS.leg1),
               settlement: HOURS.leg1,
@@ -228,7 +228,7 @@ export function PricingPage() {
               id: "are-there-receiving-fees",
               question: "Are there receiving fees?",
               answer:
-                "Network and correspondent fees are absorbed by ClearRoute. A recipient's own bank may apply its own charge, which is outside our control; where we can estimate it, we show it before you send rather than after.",
+                "Network and correspondent fees are absorbed by Clear Route. A recipient's own bank may apply its own charge, which is outside our control; where we can estimate it, we show it before you send rather than after.",
             },
             {
               id: "what-if-my-transfer-fails",

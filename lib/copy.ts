@@ -37,7 +37,7 @@ export const H1_SHARED = "See every step your money takes. Every time.";
 
 /** The illustrative-testimonials banner, §12. Non-negotiable, not buried. */
 export const TESTIMONIAL_DISCLOSURE =
-  "Illustrative testimonials. ClearRoute is a fictional company built for an " +
+  "Illustrative testimonials. Clear Route is a fictional company built for an " +
   "academic marketing project. The reviews below are written personas " +
   "representing the target customers this campaign was designed for — they are " +
   "not real customer feedback.";

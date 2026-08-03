@@ -21,7 +21,7 @@ export const LEG1_RATE = 83.421;
 /** EUR per 1 USD — the second leg is a USD→EUR conversion. */
 export const LEG2_RATE = 0.918;
 
-/** ClearRoute's standard margin, waived on a first transfer. */
+/** Clear Route's standard margin, waived on a first transfer. */
 export const MARGIN_PCT = 0.4;
 
 /** A typical bank route's applied rate, INR per 1 USD. Never named. */
@@ -108,7 +108,7 @@ export const TRANSACTION_MAP: MapRow[] = [
   },
   {
     state: "done",
-    row: "ClearRoute FX · INR → USD",
+    row: "Clear Route FX · INR → USD",
     detail: `${LEG1_RATE.toFixed(4)} locked · ${usd(LEG1_USD)}`,
     time: "09:14:38 IST",
   },
@@ -120,7 +120,7 @@ export const TRANSACTION_MAP: MapRow[] = [
   },
   {
     state: "active",
-    row: "ClearRoute FX · USD → EUR",
+    row: "Clear Route FX · USD → EUR",
     detail: `${LEG2_RATE.toFixed(4)} locked · ${eur(LEG2_EUR)}`,
     time: "in progress",
   },

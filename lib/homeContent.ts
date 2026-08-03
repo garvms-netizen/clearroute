@@ -101,11 +101,11 @@ export type Objection = {
 export const OBJECTIONS: Objection[] = [
   {
     id: "licensed-and-compliant",
-    question: "Is ClearRoute licensed and compliant?",
+    question: "Is Clear Route licensed and compliant?",
     answer:
-      "ClearRoute operates under applicable regulatory authorisation for cross-border remittance, and all transfers are subject to standard KYC and FEMA reporting requirements. Full licensing detail is on our Security & Compliance page.",
+      "Clear Route operates under applicable regulatory authorisation for cross-border remittance, and all transfers are subject to standard KYC and FEMA reporting requirements. Full licensing detail is on our Security & Compliance page.",
     projectNote:
-      "ClearRoute is fictional. A real deployment must state the actual licence type, issuing regulator and registration number here — never generic reassurance.",
+      "Clear Route is fictional. A real deployment must state the actual licence type, issuing regulator and registration number here — never generic reassurance.",
     link: { label: "Security & compliance", href: "/security" },
   },
   {

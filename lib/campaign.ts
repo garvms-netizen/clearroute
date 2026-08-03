@@ -4,7 +4,7 @@
  * Rendered verbatim across /presence/*. Two rules govern everything here:
  *
  * 1. **Concept previews, not clones.** No real platform logo, icon set or
- *    interface chrome is reproduced anywhere. The frames are ClearRoute's own,
+ *    interface chrome is reproduced anywhere. The frames are Clear Route's own,
  *    built from its own palette.
  * 2. **The offer lives at Conversion only** (§18). No Awareness or Interest
  *    asset mentions zero forex markup — a risk-reversal offer only persuades
@@ -204,7 +204,7 @@ export const IG_PROFILE = {
 /* ------------------------------------------------------------- LinkedIn -- */
 
 export const LI_PROFILE = {
-  name: "ClearRoute",
+  name: "Clear Route",
   descriptor: "Cross-border payments · 11–50 employees · Mumbai",
   followers: "2,940 followers",
 };
@@ -262,12 +262,12 @@ export const LI_POSTS: Array<{
       "Log in. Convert INR to USD. Confirm. Log out.\nLog back in an hour later. Convert USD to EUR. Re-enter everything. Confirm again.",
       "Two transfers. Two separate sessions. Same beneficiary details, re-typed twice.",
       "It's a small friction that adds up to a real amount of wasted time across a finance calendar — and it's not a limitation of the underlying payment rails. It's a limitation of how the tools on top of them are built.",
-      "We built ClearRoute around a simple idea: if you need to move money across more than one currency, that should be one session — not two separate transactions that don't know about each other.",
+      "We built Clear Route around a simple idea: if you need to move money across more than one currency, that should be one session — not two separate transactions that don't know about each other.",
       "Your first transfer is at zero forex markup, specifically so you can see the actual rate, the actual route, and the actual time it takes — before deciding whether to trust us with the next one.",
     ],
     prompt:
       "If your team handles multi-currency vendor payments, how many separate logins does that actually take today?",
-    tags: ["CrossBorderPayments", "FinTech", "TreasuryOps", "ClearRoute", "ForeignExchange"],
+    tags: ["CrossBorderPayments", "FinTech", "TreasuryOps", "Clear Route", "ForeignExchange"],
     reactions: 156,
     comments: 19,
   },
@@ -396,7 +396,7 @@ export const SOCIAL_ADS: SocialAd[] = [
     audience: "Cold · individual",
     stage: "Conversion",
     primary:
-      "Your first ClearRoute transfer is at zero forex markup — the live rate, nothing added, up to ₹5,00,000. See it for yourself before trusting us with more.",
+      "Your first Clear Route transfer is at zero forex markup — the live rate, nothing added, up to ₹5,00,000. See it for yourself before trusting us with more.",
     headline: "Zero markup, first transfer",
     cta: "Sign Up",
     visual: "offer",
@@ -470,10 +470,10 @@ export const EMAILS: Email[] = [
     subject: "Your first transfer is at zero forex markup — here's what that means",
     body: [
       "Hi {{first_name}},",
-      "Welcome to ClearRoute.",
+      "Welcome to Clear Route.",
       "Your first transfer qualifies for zero forex markup — you pay the live interbank rate, with no margin added on top, up to ₹5,00,000 (or the equivalent in your sending currency). This applies once, to your first completed transfer.",
       "Before you send:\n— You'll see the live rate and can lock it before confirming.\n— You'll see exactly which hops your money passes through, and roughly how long each will take.\n— You can add a second currency leg in the same session if you need one (INR→USD, then USD→EUR).",
-      "— The ClearRoute team",
+      "— The Clear Route team",
     ],
     buttons: ["Start your first transfer"],
   },
@@ -519,7 +519,7 @@ export const EMAILS: Email[] = [
       "Hi {{first_name}},",
       "Your transfer of {{amount}} ({{currency_pair}}) is confirmed.",
       "Rate locked: {{rate}}\nHops: {{hop_count}}\nEstimated settlement: {{eta}}",
-      "This transfer applied zero forex markup — you paid the live rate, no margin added. Future transfers use ClearRoute's standard, itemised pricing, shown before you confirm every time.",
+      "This transfer applied zero forex markup — you paid the live rate, no margin added. Future transfers use Clear Route's standard, itemised pricing, shown before you confirm every time.",
     ],
     buttons: ["View live transaction map"],
   },
@@ -574,7 +574,7 @@ export const EMAILS: Email[] = [
     name: "Quarterly transparency report",
     trigger: "Quarterly",
     job: "Reuse the user's own data back to them as trust reinforcement, never as a new pitch.",
-    subject: "Your ClearRoute quarter, in numbers",
+    subject: "Your Clear Route quarter, in numbers",
     body: [
       "Hi {{first_name}},",
       "Here's your summary for {{quarter}}:",

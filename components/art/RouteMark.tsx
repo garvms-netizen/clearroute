@@ -25,7 +25,7 @@ type Size = 20 | 24 | 40;
 export function RouteMark({
   size = 24,
   className,
-  title = "ClearRoute",
+  title = "Clear Route",
   decorative = false,
 }: {
   size?: Size | number;

@@ -4,7 +4,7 @@ import { cn } from "@/lib/cn";
  * PhoneFrame — a generic device shell for the social channel previews.
  *
  * Deliberately not a replica of any real handset: a plain rounded rectangle,
- * a speaker slot, and a home indicator, drawn in ClearRoute's own tokens.
+ * a speaker slot, and a home indicator, drawn in Clear Route's own tokens.
  * The presence pages are concept previews, and imitating a manufacturer's
  * industrial design would undercut that framing as much as copying a
  * platform's UI chrome would.

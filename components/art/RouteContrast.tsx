@@ -15,7 +15,7 @@ import { a11yProps, drawStyle, STROKE, type ArtProps } from "./art-shared";
  */
 export function RouteContrast({
   className,
-  title = "Two routes across a dotted world map: a long path through five intermediary banks, and ClearRoute's direct path through one",
+  title = "Two routes across a dotted world map: a long path through five intermediary banks, and Clear Route's direct path through one",
   decorative,
   animate = false,
 }: ArtProps & { animate?: boolean }) {
@@ -66,7 +66,7 @@ export function RouteContrast({
         ))}
       </g>
 
-      {/* ClearRoute: one bend, one intermediary — the same shape as the mark. */}
+      {/* Clear Route: one bend, one intermediary — the same shape as the mark. */}
       <path
         d="M64 132 L320 132 L576 56"
         stroke="var(--accent)"

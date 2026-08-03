@@ -10,7 +10,7 @@ import { a11yProps, STROKE, type ArtProps } from "./art-shared";
  */
 export function SecurityShield({
   className,
-  title = "A shield outline enclosing the ClearRoute three-node route line",
+  title = "A shield outline enclosing the Clear Route three-node route line",
   decorative,
 }: ArtProps) {
   return (

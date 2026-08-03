@@ -8,11 +8,11 @@ import { RouteMark } from "@/components/art/RouteMark";
  * The engagement affordances are drawn here from the route motif rather than
  * copied from any platform's icon set: a node glyph for reactions, a bracket
  * for comments, an arrow for shares. Same reason the frame carries no
- * platform logo — these are concept previews of ClearRoute's own assets, not
+ * platform logo — these are concept previews of Clear Route's own assets, not
  * reproductions of someone else's interface.
  */
 export function PostCard({
-  author = "ClearRoute",
+  author = "Clear Route",
   meta,
   body,
   visual,

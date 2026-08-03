@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 /* ==========================================================================
-   ClearRoute — one stylesheet, two expressions.
+   Clear Route — one stylesheet, two expressions.
 
    Mode is set as data-mode="institutional|personal" on <html>, derived from
    the route segment (see lib/mode.ts). Both token sets are declared here and

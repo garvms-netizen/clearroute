@@ -19,6 +19,13 @@ const SIZES: Record<Size, string> = {
   lg: "h-12 px-6 text-[15px]",
 };
 
+/**
+ * Note for callers: `inline-flex` here is not overridable from `className`.
+ * Tailwind resolves same-specificity utilities by stylesheet order, not by
+ * the order they appear in the class attribute, so passing `hidden` alongside
+ * it does nothing. To hide a button responsively, wrap it in an element that
+ * carries the visibility classes.
+ */
 const BASE =
   "inline-flex items-center justify-center gap-2 font-medium whitespace-nowrap " +
   "disabled:opacity-40 disabled:cursor-not-allowed";

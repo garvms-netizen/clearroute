@@ -62,10 +62,10 @@ export function EntryFork() {
           <span className="inline-flex items-center gap-2.5">
             <RouteMark size={30} decorative />
             <span
-              className="text-2xl leading-none font-semibold"
-              style={{ letterSpacing: "-0.02em", color: "var(--text)" }}
+              className="text-2xl font-semibold whitespace-nowrap"
+              style={{ letterSpacing: "-0.02em", lineHeight: 1.1, color: "var(--text)" }}
             >
-              clearroute
+              Clear Route
             </span>
           </span>
 

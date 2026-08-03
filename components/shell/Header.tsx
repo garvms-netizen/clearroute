@@ -69,7 +69,7 @@ export function Header() {
           <Link
             href={homeHref(mode)}
             className="shrink-0"
-            aria-label="ClearRoute — home"
+            aria-label="Clear Route — home"
           >
             <Wordmark size={22} />
           </Link>
@@ -100,9 +100,18 @@ export function Header() {
 
           <div className="ml-auto flex items-center gap-4">
             <ModeSwitch className="hidden xl:inline" />
-            <Button href={cta.href} size="sm" className="hidden sm:inline-flex">
-              {cta.label}
-            </Button>
+
+            {/* The wrapper owns the responsive hiding, not the Button.
+                Button sets `inline-flex` in its own base classes, and Tailwind
+                resolves same-specificity utilities by stylesheet order rather
+                than by the order they appear in the class attribute — so a
+                `hidden` passed in via className loses, and the CTA stayed
+                visible at 360px, pushing the header past the viewport. */}
+            <span className="hidden sm:block">
+              <Button href={cta.href} size="sm">
+                {cta.label}
+              </Button>
+            </span>
 
             <button
               type="button"

@@ -11,7 +11,7 @@ import { Eyebrow } from "./Eyebrow";
  * `project-note` is the fictional-company disclosure. It is deliberately
  * styled *unlike* product copy — dashed rule, no fill, mono label — so a
  * reader can tell at a glance that it is the project speaking about itself
- * rather than ClearRoute making a claim. Blending it in would defeat it.
+ * rather than Clear Route making a claim. Blending it in would defeat it.
  */
 type Variant = "info" | "offer" | "project-note";
 

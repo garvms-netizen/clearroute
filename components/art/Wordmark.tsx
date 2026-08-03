@@ -16,14 +16,18 @@ export function Wordmark({
     <span className={`inline-flex items-center gap-2 ${className}`}>
       <RouteMark size={size} decorative />
       <span
-        className="font-semibold leading-none"
+        className="font-semibold whitespace-nowrap"
         style={{
           fontSize: size * 0.82,
           letterSpacing: "-0.02em",
+          // Two words need a line-height above zero or the descender in the
+          // space between them clips at small sizes; leading-none was fine for
+          // a single lowercase word and is not here.
+          lineHeight: 1.1,
           color: "var(--text)",
         }}
       >
-        clearroute
+        Clear Route
       </span>
     </span>
   );

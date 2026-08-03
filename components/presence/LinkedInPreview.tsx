@@ -18,8 +18,8 @@ const POST_VISUALS = ["feestack", "route", "phone"] as const;
  *
  * No LinkedIn logo, no clone of its interface. The banner is RouteContrast,
  * the avatar is the RouteMark, and PostCard supplies the frame — the same
- * component the paid-social previews use, because these are ClearRoute's
- * assets in ClearRoute's chrome.
+ * component the paid-social previews use, because these are Clear Route's
+ * assets in Clear Route's chrome.
  */
 export function LinkedInPreview() {
   return (

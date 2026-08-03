@@ -1,8 +1,8 @@
-# ClearRoute
+# Clear Route
 
-Marketing website for **ClearRoute**, a cross-border payment platform.
+Marketing website for **Clear Route**, a cross-border payment platform.
 
-> **ClearRoute is fictional.** It was created for an academic marketing project.
+> **Clear Route is fictional.** It was created for an academic marketing project.
 > It is not a real financial services provider, is not licensed or regulated,
 > and does not process real transactions. Every testimonial on the site is a
 > written persona and is labelled as illustrative.

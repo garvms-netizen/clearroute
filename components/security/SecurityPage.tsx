@@ -91,7 +91,7 @@ export function SecurityPage() {
         </DataList>
 
         <Callout variant="project-note" className="mt-6 max-w-3xl">
-          ClearRoute is fictional and holds no licence. In a real deployment
+          Clear Route is fictional and holds no licence. In a real deployment
           every field above must contain the actual licence type, issuing
           regulator and registration number, verifiable independently. Generic
           reassurance in place of specifics is the single clearest warning sign

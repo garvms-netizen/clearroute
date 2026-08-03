@@ -13,7 +13,7 @@ import { SEARCH_ADS, SOCIAL_ADS } from "@/lib/campaign";
 /**
  * Search and paid-social ad previews.
  *
- * Generic result-style and paid-social cards in ClearRoute's palette — not a
+ * Generic result-style and paid-social cards in Clear Route's palette — not a
  * clone of any SERP unit or ad frame. Every landing page link is live, so a
  * reviewer can follow the intent straight through to the destination and
  * check that the promise on the ad is the promise on the page.
