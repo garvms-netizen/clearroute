@@ -39,6 +39,15 @@ export type RateSet = {
   isFallback: boolean;
 };
 
+/** One real published close. */
+export type Close = { date: string; rate: number };
+
+export type RateHistory = {
+  /** Oldest to newest, one entry per ECB publishing day. */
+  series: Record<Corridor, Close[]>;
+  isFallback: boolean;
+};
+
 /**
  * Static fallbacks, matching the §9.2 worked example so every downstream
  * figure still reconciles when the network is unavailable.
@@ -101,6 +110,74 @@ export async function fetchRates(signal?: AbortSignal): Promise<RateSet> {
   }
 
   return { rates: out, date: data.date ?? FALLBACK_RATES.date, isFallback: false };
+}
+
+/**
+ * Real published closes for the last `days` calendar days.
+ *
+ * This is what makes movement on this site honest. There is no free,
+ * keyless, CORS-enabled source of intraday interbank rates — tick data is a
+ * commercial product — so the choice was between showing one static number
+ * or inventing movement between refreshes. The time-series endpoint removes
+ * that choice: every point below is an actual ECB close on an actual date,
+ * so day-over-day change and the trend line are both real and independently
+ * checkable. Nothing is interpolated and nothing is simulated.
+ *
+ * Weekends and TARGET holidays simply have no entry, which is correct — the
+ * ECB does not publish on those days, and inventing a point to smooth the
+ * line would be exactly the fabrication this whole approach avoids.
+ */
+export async function fetchRateHistory(
+  days = 45,
+  signal?: AbortSignal,
+): Promise<RateHistory> {
+  const start = new Date();
+  start.setUTCDate(start.getUTCDate() - days);
+  const from = start.toISOString().slice(0, 10);
+
+  const url =
+    `https://api.frankfurter.dev/v1/${from}..?base=EUR&symbols=INR,` +
+    CORRIDORS.filter((c) => c !== "EUR").join(",");
+
+  const res = await fetch(url, { signal });
+  if (!res.ok) throw new Error(`Rate history failed: ${res.status}`);
+
+  const data: { rates?: Record<string, Record<string, number>> } =
+    await res.json();
+  const byDate = data.rates ?? {};
+  const dates = Object.keys(byDate).sort();
+  if (dates.length === 0) throw new Error("Rate history empty");
+
+  const series = { USD: [], EUR: [], GBP: [] } as Record<Corridor, Close[]>;
+
+  for (const date of dates) {
+    const row = byDate[date];
+    const inrPerEur = row?.INR;
+    if (!inrPerEur) continue;
+    for (const c of CORRIDORS) {
+      // Same EUR-base derivation as fetchRates, for the same precision
+      // reason — see the note there.
+      const rate = c === "EUR" ? inrPerEur : inrPerEur / row[c];
+      if (Number.isFinite(rate)) series[c].push({ date, rate });
+    }
+  }
+
+  return { series, isFallback: false };
+}
+
+/** Absolute and percentage change between the last two real closes. */
+export function dayChange(closes: Close[]) {
+  if (closes.length < 2) return null;
+  const latest = closes[closes.length - 1];
+  const prev = closes[closes.length - 2];
+  const abs = latest.rate - prev.rate;
+  return {
+    abs,
+    pct: (abs / prev.rate) * 100,
+    direction: abs > 0 ? ("up" as const) : abs < 0 ? ("down" as const) : ("flat" as const),
+    previousDate: prev.date,
+    latestDate: latest.date,
+  };
 }
 
 /* --------------------------------------------------------------------------

@@ -90,27 +90,42 @@ export function VideoPlayer({
     );
   }
 
+  // A fixed 16:9 letterbox with the video centred and contained inside it.
+  //
+  // The frame owns the layout, not the file. Whatever the source's real
+  // dimensions — a square social cut, a 9:16 vertical, an ultrawide export —
+  // it scales down to fit and centres, so the page never reflows around a
+  // video and a tall file can't push the section past the viewport. The
+  // letterbox is --surface-2 rather than black so it reads as part of the
+  // page in both modes.
   return (
-    <video
-      ref={watchForMissingFile}
-      controls
-      preload="metadata"
-      playsInline
-      onPlay={onPlay}
-      // src goes on the element rather than a <source> child on purpose: a
-      // failed <source> fires `error` on the source element, which does not
-      // bubble, so the video would sit there permanently blank instead of
-      // falling back. With src here, the video itself reports the failure.
-      src={`${base}${src}`}
-      className={cn("aspect-video w-full", className)}
+    <div
+      className={cn(
+        "flex aspect-video w-full min-w-0 items-center justify-center overflow-hidden",
+        className,
+      )}
       style={{
         background: "var(--surface-2)",
         border: "1px solid var(--line)",
         borderRadius: "var(--radius-lg)",
       }}
     >
-      Your browser doesn&rsquo;t support embedded video. The film is a {runtime}{" "}
-      walkthrough titled &ldquo;{title}&rdquo;.
-    </video>
+      <video
+        ref={watchForMissingFile}
+        controls
+        preload="metadata"
+        playsInline
+        onPlay={onPlay}
+        // src goes on the element rather than a <source> child on purpose: a
+        // failed <source> fires `error` on the source element, which does not
+        // bubble, so the video would sit there permanently blank instead of
+        // falling back. With src here, the video itself reports the failure.
+        src={`${base}${src}`}
+        className="max-h-full max-w-full object-contain"
+      >
+        Your browser doesn&rsquo;t support embedded video. The film is a{" "}
+        {runtime} walkthrough titled &ldquo;{title}&rdquo;.
+      </video>
+    </div>
   );
 }
