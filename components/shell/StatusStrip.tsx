@@ -1,11 +1,11 @@
 import { Sparkline } from "@/components/ui/Sparkline";
 import {
-  closesFor,
+  changeVsPreviousClose,
   CORRIDORS,
-  dayChange,
   formatRate,
-  formatRateDate,
+  formatRateTime,
   hasLiveData,
+  intradayFor,
   latestClose,
 } from "@/lib/rates";
 
@@ -35,7 +35,7 @@ import {
  * ships as markup with no JavaScript attached.
  */
 export function StatusStrip() {
-  const latestDate = latestClose("USD").date;
+  const latestStamp = latestClose("USD").date;
 
   return (
     <div
@@ -45,8 +45,10 @@ export function StatusStrip() {
     >
       <div className="mx-auto flex w-full max-w-7xl items-stretch">
         {CORRIDORS.map((c) => {
-          const closes = closesFor(c);
-          const change = dayChange(closes);
+          // The trend line draws real 5-minute bars, so it shows movement that
+          // happened within the day rather than a flat step between closes.
+          const bars = intradayFor(c);
+          const change = changeVsPreviousClose(c);
 
           return (
             <div
@@ -66,8 +68,8 @@ export function StatusStrip() {
                 INR → {c}
               </span>
 
-              {closes.length > 1 && (
-                <Sparkline closes={closes.slice(-30)} className="shrink-0" />
+              {bars.length > 1 && (
+                <Sparkline closes={bars.slice(-72)} className="shrink-0" />
               )}
 
               <span className="ml-auto flex shrink-0 items-baseline gap-2">
@@ -84,7 +86,7 @@ export function StatusStrip() {
                   <span
                     className="mono text-[10px]"
                     style={{ color: "var(--text-dim)" }}
-                    title={`Change from the ${formatRateDate(change.previousDate)} close`}
+                    title={`Change against the previous daily close (${change.previousDate})`}
                   >
                     {change.direction === "up"
                       ? "▲"
@@ -104,7 +106,7 @@ export function StatusStrip() {
           style={{ color: "var(--text-dim)" }}
         >
           {hasLiveData
-            ? `Daily close · ${formatRateDate(latestDate)} · 30-day trend`
+            ? `Yahoo Finance · as of ${formatRateTime(latestStamp)} · vs previous close`
             : "Sample rates · no published data available"}
         </p>
       </div>

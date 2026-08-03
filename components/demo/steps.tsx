@@ -6,7 +6,7 @@ import { Callout } from "@/components/ui/Callout";
 import { DataList, DataRow } from "@/components/ui/DataRow";
 import { StatTile } from "@/components/ui/StatTile";
 import { TransactionMap } from "./TransactionMap";
-import { formatMoney, formatRate, formatRateDate } from "@/lib/rates";
+import { formatMoney, formatRate, formatRateTime } from "@/lib/rates";
 import {
   BANK_RATE,
   BANK_SETTLEMENT,
@@ -135,9 +135,8 @@ export function StepRoute({ t, mode }: { t: T; mode: Mode }) {
             <>Showing sample rates — no published data available.</>
           ) : (
             <>
-              Daily close · Yahoo Finance ·{" "}
-              {formatRateDate(t.close.date)}. Published once per trading day,
-              not tick-by-tick.
+              Yahoo Finance · as of {formatRateTime(t.close.date)}. Captured
+              when this site was last built, not streamed continuously.
             </>
           )}
         </p>

@@ -47,10 +47,16 @@ export type Close = { date: string; rate: number };
 type Generated = {
   source: string;
   fetchedAt: string | null;
+  /** Daily closes — the baseline for day-over-day change. */
   series: Partial<Record<Corridor, Close[]>>;
+  /** 5-minute bars — what the trend line draws and where the quote comes from. */
+  intraday?: Partial<Record<Corridor, Close[]>>;
 };
 
 const data = generated as Generated;
+
+/** When the build last pulled from Yahoo. Displayed so freshness is visible. */
+export const FETCHED_AT = data.fetchedAt;
 
 /**
  * Static fallbacks, matching the §9.2 worked example. Only reachable if the
@@ -65,16 +71,58 @@ export const FALLBACK_RATES: Record<Corridor, number> = {
 
 export const FALLBACK_NOTICE = "Showing sample rates — no published data available.";
 
-/** Full series for a corridor, oldest to newest. */
+/** Daily closes for a corridor, oldest to newest. */
 export function closesFor(corridor: Corridor): Close[] {
   return data.series[corridor] ?? [];
 }
 
-/** The most recent published close, or the static fallback. */
+/** 5-minute intraday bars, oldest to newest. */
+export function intradayFor(corridor: Corridor): Close[] {
+  return data.intraday?.[corridor] ?? [];
+}
+
+/**
+ * The most recent observed price — the last intraday bar where we have one,
+ * falling back to the last daily close, then to the static figure.
+ *
+ * Intraday is preferred because it is genuinely more recent: the last 5-minute
+ * bar is minutes old at build time, where the daily close can be a day behind.
+ */
 export function latestClose(corridor: Corridor): Close {
-  const series = closesFor(corridor);
-  const last = series[series.length - 1];
-  return last ?? { date: "", rate: FALLBACK_RATES[corridor] };
+  const intra = intradayFor(corridor);
+  const last = intra[intra.length - 1];
+  if (last) return last;
+
+  const daily = closesFor(corridor);
+  return daily[daily.length - 1] ?? { date: "", rate: FALLBACK_RATES[corridor] };
+}
+
+/**
+ * Change against the previous *daily close*, not the previous bar.
+ *
+ * Comparing an intraday price to the tick five minutes earlier would report
+ * noise as news. Against yesterday's close it answers the question someone
+ * sending money actually has: is this better or worse than it was?
+ */
+export function changeVsPreviousClose(corridor: Corridor) {
+  const daily = closesFor(corridor);
+  const now = latestClose(corridor);
+  if (daily.length < 1) return null;
+
+  // The last daily bar may be today's, in which case yesterday's is the
+  // baseline; otherwise the last one we have is the previous close.
+  const today = now.date.slice(0, 10);
+  const prior = [...daily].reverse().find((d) => d.date.slice(0, 10) !== today);
+  if (!prior) return null;
+
+  const abs = now.rate - prior.rate;
+  return {
+    abs,
+    pct: (abs / prior.rate) * 100,
+    direction: abs > 0 ? ("up" as const) : abs < 0 ? ("down" as const) : ("flat" as const),
+    previousDate: prior.date,
+    latestDate: now.date,
+  };
 }
 
 /** True when no published data made it into the build. */
@@ -130,10 +178,15 @@ export function formatMoney(amount: number, currency: string): string {
   );
 }
 
-/** "2 August 2026" — spelled out, so it can't be misread as a rate. */
+/**
+ * "2 August 2026" — spelled out, so it can't be misread as a rate.
+ *
+ * Accepts both stamp shapes the generated file carries: a plain `2026-08-02`
+ * from a daily bar, and a full `2026-08-03T02:31Z` from an intraday one.
+ */
 export function formatRateDate(iso: string): string {
   if (!iso) return "";
-  const d = new Date(`${iso}T00:00:00Z`);
+  const d = new Date(iso.length <= 10 ? `${iso}T00:00:00Z` : iso);
   if (Number.isNaN(d.getTime())) return iso;
   return d.toLocaleDateString("en-GB", {
     day: "numeric",
@@ -141,4 +194,23 @@ export function formatRateDate(iso: string): string {
     year: "numeric",
     timeZone: "UTC",
   });
+}
+
+/** "2 Aug, 02:31 UTC" — for intraday stamps, where the time is the point. */
+export function formatRateTime(iso: string): string {
+  if (!iso) return "";
+  const d = new Date(iso.length <= 10 ? `${iso}T00:00:00Z` : iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  const day = d.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+    timeZone: "UTC",
+  });
+  const time = d.toLocaleTimeString("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone: "UTC",
+  });
+  return `${day}, ${time} UTC`;
 }

@@ -38,50 +38,76 @@ const OUT = join(HERE, "..", "lib", "generated", "rates.json");
 /** INR per 1 unit of each quote currency. */
 const SYMBOLS = { USD: "USDINR=X", EUR: "EURINR=X", GBP: "GBPINR=X" };
 
-const RANGE = "3mo";
+/**
+ * Two series per corridor, because they answer different questions.
+ *
+ * - `intraday` (5-minute bars over 5 days) is what the trend line draws and
+ *   where the current quote comes from. Yahoo returns roughly 370 real bars
+ *   for this pair, so the line shows movement that genuinely happened within
+ *   the day rather than a flat step between daily closes.
+ * - `daily` (daily closes over 3 months) is the baseline for the
+ *   day-over-day change. Comparing an intraday tick against the previous
+ *   *close* is the comparison that means something; comparing it against the
+ *   tick five minutes earlier would be noise.
+ */
+const SERIES_SPECS = [
+  { key: "intraday", query: "interval=5m&range=5d", precision: 16 },
+  { key: "daily", query: "interval=1d&range=3mo", precision: 10 },
+];
 
-async function fetchSeries(symbol) {
+async function fetchSeries(symbol, spec) {
   const url =
     `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}` +
-    `?interval=1d&range=${RANGE}`;
+    `?${spec.query}`;
 
   const res = await fetch(url, {
     // Yahoo rejects requests with no UA.
     headers: { "User-Agent": "Mozilla/5.0 (compatible; clearroute-build/1.0)" },
     signal: AbortSignal.timeout(15_000),
   });
-  if (!res.ok) throw new Error(`${symbol}: HTTP ${res.status}`);
+  if (!res.ok) throw new Error(`${symbol} ${spec.key}: HTTP ${res.status}`);
 
   const json = await res.json();
   const result = json?.chart?.result?.[0];
-  if (!result) throw new Error(`${symbol}: no chart result`);
+  if (!result) throw new Error(`${symbol} ${spec.key}: no chart result`);
 
   const stamps = result.timestamp ?? [];
   const closes = result.indicators?.quote?.[0]?.close ?? [];
 
-  // Yahoo emits nulls for days with no print. Dropping them is correct — a
-  // day with no observed close genuinely has no value, and interpolating one
-  // would be inventing a rate.
+  // Yahoo emits nulls for periods with no print. Dropping them is correct — a
+  // period with no observed price genuinely has no value, and interpolating
+  // one would be inventing a rate.
   const series = stamps
-    .map((t, i) => ({
-      date: new Date(t * 1000).toISOString().slice(0, 10),
-      rate: closes[i],
-    }))
+    .map((t, i) => ({ t, rate: closes[i] }))
     .filter((p) => typeof p.rate === "number" && Number.isFinite(p.rate))
-    .map((p) => ({ date: p.date, rate: Math.round(p.rate * 1e4) / 1e4 }));
+    .map((p) => ({
+      // Daily bars keep a plain date; intraday keeps the minute, because the
+      // whole point of intraday is that the time of day matters.
+      date: new Date(p.t * 1000).toISOString().slice(0, spec.precision) + (spec.precision > 10 ? "Z" : ""),
+      rate: Math.round(p.rate * 1e4) / 1e4,
+    }));
 
-  if (series.length < 2) throw new Error(`${symbol}: only ${series.length} usable points`);
+  if (series.length < 2) {
+    throw new Error(`${symbol} ${spec.key}: only ${series.length} usable points`);
+  }
   return series;
 }
 
 async function main() {
-  const out = { source: "Yahoo Finance", fetchedAt: null, series: {} };
+  const out = { source: "Yahoo Finance", fetchedAt: null, series: {}, intraday: {} };
 
   for (const [code, symbol] of Object.entries(SYMBOLS)) {
-    out.series[code] = await fetchSeries(symbol);
+    for (const spec of SERIES_SPECS) {
+      const series = await fetchSeries(symbol, spec);
+      if (spec.key === "daily") out.series[code] = series;
+      else out.intraday[code] = series;
+    }
+    const d = out.series[code];
+    const i = out.intraday[code];
     console.log(
-      `  ${code.padEnd(3)} ${String(out.series[code].length).padStart(3)} closes  ` +
-        `latest ${out.series[code].at(-1).date} = ${out.series[code].at(-1).rate}`,
+      `  ${code.padEnd(3)} ${String(d.length).padStart(3)} daily closes · ` +
+        `${String(i.length).padStart(4)} intraday bars · ` +
+        `latest ${i.at(-1).date} = ${i.at(-1).rate}`,
     );
   }
 

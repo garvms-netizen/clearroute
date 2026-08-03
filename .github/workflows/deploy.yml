@@ -4,14 +4,23 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
-  # Rebuild daily so the FX closes stay current. `npm run prebuild` fetches
-  # them from Yahoo, which cannot be called from the browser (no CORS
-  # headers), so the build is where that data gets in. 06:30 UTC is after the
-  # previous trading day has settled everywhere we quote.
+  # Rebuild every 30 minutes on weekdays so the quotes stay near-current.
+  # `npm run prebuild` pulls them from Yahoo, which cannot be called from the
+  # browser (no CORS headers), so the build is the only place that data gets
+  # in — there is no server to refresh it on demand.
+  #
+  # 30 minutes rather than 5, deliberately. GitHub documents that scheduled
+  # workflows are delayed or dropped under load, so a 5-minute cron does not
+  # reliably run every 5 minutes, and Pages throttles frequent redeploys.
+  # 48 runs a day is well inside both limits and keeps the figure minutes to
+  # half an hour old rather than a day old.
+  #
+  # Weekdays only: FX spot does not trade over the weekend, so a Saturday
+  # rebuild would republish Friday's closing price as if it were new.
   #
   # Free: Actions minutes are unmetered for public repositories.
   schedule:
-    - cron: "30 6 * * *"
+    - cron: "*/30 * * * 1-5"
 
 # Allow the workflow to publish to Pages.
 permissions:
