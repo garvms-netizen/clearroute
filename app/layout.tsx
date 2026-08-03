@@ -29,7 +29,19 @@ export const metadata: Metadata = {
   description:
     "Cross-border payments with nothing hidden — live rates, minimal intermediaries, full transaction tracking, and multi-currency transfers in one session.",
   applicationName: "ClearRoute",
-  robots: { index: true, follow: true },
+  /**
+   * Site-wide noindex while the project is under construction.
+   *
+   * The site is publicly reachable so it can be shared and reviewed, but a
+   * half-built page presenting itself as a cross-border payments platform has
+   * no business in search results. The disclaimer sits on every page; a search
+   * snippet would carry the headline without it.
+   *
+   * public/robots.txt deliberately allows crawling so this directive is
+   * readable — see the note there. Remove this to make the site
+   * discoverable.
+   */
+  robots: { index: false, follow: false },
 };
 
 export const viewport = {

@@ -1,0 +1,21 @@
+# ClearRoute is a fictional company built for an academic marketing project.
+# It is not a real financial services provider.
+#
+# Crawling is ALLOWED here on purpose, while every page serves a `noindex`
+# robots directive (see app/layout.tsx).
+#
+# Those two facts belong together. `Disallow: /` would stop crawlers fetching
+# the pages at all — which also stops them ever reading the noindex tag, so a
+# URL that someone links to can still surface as a bare result with no
+# description. Allowing the crawl and serving noindex is what actually keeps
+# the site out of search results: the crawler fetches, sees the directive, and
+# drops the page.
+#
+# To make the site discoverable when it is finished:
+#   1. remove `robots: { index: false, follow: false }` from app/layout.tsx
+#   2. uncomment the Sitemap line below
+
+User-agent: *
+Disallow: /styleguide/
+
+# Sitemap: https://garvms-netizen.github.io/clearroute/sitemap.xml
