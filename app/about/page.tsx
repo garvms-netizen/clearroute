@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
-import { PageStub } from "@/components/shell/PageStub";
+import { AboutPage } from "@/components/about/AboutPage";
 
-export const metadata: Metadata = { title: "About" };
+export const metadata: Metadata = {
+  title: "About — where does the money actually go?",
+  description:
+    "The observation, the diagnosis and the decision behind Clear Route: build the visibility layer rather than new rails.",
+};
 
 export default function Page() {
-  return (
-    <PageStub
-      eyebrow="COMPANY"
-      title="We started with one question: where does the money actually go?"
-      stage="Stage 8"
-    />
-  );
+  return <AboutPage />;
 }

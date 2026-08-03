@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { PageStub } from "@/components/shell/PageStub";
+import { Article } from "@/components/blog/Article";
 import { POSTS, publishedSlugs } from "@/lib/posts";
 
 /**
@@ -23,6 +23,7 @@ export async function generateMetadata({
   return {
     title: post?.metaTitle ?? "Article",
     description: post?.metaDescription,
+    keywords: post?.keywords,
   };
 }
 
@@ -35,5 +36,5 @@ export default async function BlogPost({
   const post = POSTS.find((p) => p.slug === slug && p.status === "published");
   if (!post) notFound();
 
-  return <PageStub eyebrow="BLOG" title={post.title} stage="Stage 8" />;
+  return <Article />;
 }

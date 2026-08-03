@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
-import { PageStub } from "@/components/shell/PageStub";
+import { FaqPage } from "@/components/faq/FaqPage";
 
-export const metadata: Metadata = { title: "Faq" };
+export const metadata: Metadata = {
+  title: "FAQ — rates, fees, transfers, security",
+  description:
+    "Answers on how the rate is set, what a transfer costs, how tracking works, what happens if a payment is held, and what this site collects.",
+};
 
 export default function Page() {
-  return (
-    <PageStub
-      eyebrow="FAQ"
-      title="Questions worth asking before you send money anywhere."
-      stage="Stage 8"
-    />
-  );
+  return <FaqPage />;
 }

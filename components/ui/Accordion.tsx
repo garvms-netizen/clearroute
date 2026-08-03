@@ -67,7 +67,10 @@ export function Accordion({
             key={item.id}
             id={item.id}
             className="border-b"
-            style={{ borderColor: "var(--line)", scrollMarginTop: "120px" }}
+            // No scroll-margin-top here: html carries scroll-padding-top: 120px
+            // in globals.css, and setting both makes them stack to 240px,
+            // dropping the target well below where it should land.
+            style={{ borderColor: "var(--line)" }}
           >
             <h3>
               <button
