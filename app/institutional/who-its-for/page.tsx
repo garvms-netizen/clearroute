@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
-import { PageStub } from "@/components/shell/PageStub";
+import { PersonaPage } from "@/components/personas/PersonaPage";
 
-export const metadata: Metadata = { title: "Who Its For" };
+export const metadata: Metadata = {
+  title: "Who it's for — finance teams moving company money",
+  description:
+    "Built for the finance manager who signs off on vendor payments, subsidiary funding and contractor payouts, and has to justify the choice to a CFO.",
+};
 
 export default function Page() {
-  return (
-    <PageStub
-      eyebrow="WHO IT'S FOR"
-      title="Built for the person who signs off on the payment."
-      stage="Stage 6"
-    />
-  );
+  return <PersonaPage mode="institutional" />;
 }

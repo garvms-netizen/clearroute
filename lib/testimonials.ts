@@ -109,3 +109,50 @@ export const TRUST_ROW: Array<{ figure: string; label: string }> = [
   { figure: "40+", label: "currency corridors" },
   { figure: "~4 hrs", label: "average settlement" },
 ];
+
+/**
+ * Case studies, §12.3. Each is labelled an illustrative scenario wherever it
+ * renders — these describe how the product is designed to be used, not
+ * engagements that happened.
+ */
+export type CaseStudy = {
+  id: string;
+  title: string;
+  situation: string;
+  change: string;
+  outcome: string;
+  audience: Mode;
+};
+
+export const CASE_STUDIES: CaseStudy[] = [
+  {
+    id: "import-export-ahmedabad",
+    title: "Import-export SME, Ahmedabad",
+    situation:
+      "Forty vendor payments a month across USD and EUR, each set up as its own transaction.",
+    change:
+      "Consolidated into multi-leg sessions, so a USD and a EUR payment to the same schedule are arranged together.",
+    outcome: "Settlement moved from 2–5 days to same-day.",
+    audience: "institutional",
+  },
+  {
+    id: "it-services-pune",
+    title: "IT services firm, Pune",
+    situation:
+      "Recurring contractor payouts, reconciled by hand against bank statements at month end.",
+    change:
+      "Scheduled transfers plus exportable transaction maps, so each payment arrives with its own itemised route.",
+    outcome: "Month-end reconciliation time cut substantially.",
+    audience: "institutional",
+  },
+  {
+    id: "student-family-kochi-berlin",
+    title: "Postgraduate student family, Kochi → Berlin",
+    situation:
+      "Termly tuition and monthly support, sent whenever the deadline demanded it.",
+    change:
+      "Rate alerts on the corridor they use, so transfers could be timed rather than forced.",
+    outcome: "They choose when to send instead of accepting whatever the day gave them.",
+    audience: "personal",
+  },
+];
