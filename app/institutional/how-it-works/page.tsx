@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
-import { PageStub } from "@/components/shell/PageStub";
+import { InteractiveDemo } from "@/components/demo/InteractiveDemo";
 
-export const metadata: Metadata = { title: "How It Works" };
+export const metadata: Metadata = {
+  title: "How a transfer works — for businesses",
+  description:
+    "A worked cross-border transfer end to end: live locked rate, itemised margin, multi-leg in one session, and the full transaction map with every hop and timestamp.",
+};
 
 export default function Page() {
-  return (
-    <PageStub
-      eyebrow="HOW IT WORKS"
-      title="Four steps. Nothing hidden at any of them."
-      stage="Stage 5"
-    />
-  );
+  return <InteractiveDemo mode="institutional" />;
 }

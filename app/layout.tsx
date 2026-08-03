@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, IBM_Plex_Mono } from "next/font/google";
+import Script from "next/script";
 import { ModeProvider } from "@/components/ModeProvider";
 import { SiteChrome } from "@/components/shell/SiteChrome";
 import "./globals.css";
@@ -75,7 +76,15 @@ export default function RootLayout({
       className={`${inter.variable} ${plexMono.variable} h-full`}
     >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: MODE_BOOTSTRAP }} />
+        {/* next/script with beforeInteractive rather than a bare <script>:
+            React 19 warns that script tags inside the component tree are not
+            executed on client render, and this has to run before first paint
+            on a full page load. */}
+        <Script
+          id="clearroute-mode-bootstrap"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{ __html: MODE_BOOTSTRAP }}
+        />
       </head>
       <body className="min-h-full flex flex-col">
         <ModeProvider>

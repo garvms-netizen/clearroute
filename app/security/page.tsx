@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
-import { PageStub } from "@/components/shell/PageStub";
+import { SecurityPage } from "@/components/security/SecurityPage";
 
-export const metadata: Metadata = { title: "Security" };
+export const metadata: Metadata = {
+  title: "Security & compliance",
+  description:
+    "Regulatory posture, how funds are handled, platform security, and what we will never do. Safety here means you can see the path your money takes.",
+};
 
 export default function Page() {
-  return (
-    <PageStub
-      eyebrow="SECURITY & COMPLIANCE"
-      title="Safety here means you can see the path."
-      stage="Stage 5"
-    />
-  );
+  return <SecurityPage />;
 }

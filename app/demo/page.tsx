@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
-import { PageStub } from "@/components/shell/PageStub";
+import { DemoPage } from "@/components/demo/DemoPage";
 
-export const metadata: Metadata = { title: "Demo" };
+export const metadata: Metadata = {
+  title: "Product demo — watch a transfer, end to end",
+  description:
+    "Two short films: one for finance teams moving company money, one for people sending money to family, students and freelancers. Both play inline.",
+};
 
 export default function Page() {
-  return (
-    <PageStub
-      eyebrow="PRODUCT DEMO"
-      title="Watch a transfer, end to end."
-      stage="Stage 5"
-    />
-  );
+  return <DemoPage />;
 }
