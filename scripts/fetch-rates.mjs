@@ -33,9 +33,27 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
+
 const OUT = join(HERE, "..", "lib", "generated", "rates.json");
 
-/** INR per 1 unit of each quote currency. */
+/**
+ * Every currency the picker offers, quoted against USD.
+ *
+ * One base is enough for the whole world: with `perUSD[X]` for every X, any
+ * pair is a division — `rate(A→B) = perUSD[A] / perUSD[B]`. That turns 144
+ * requests into support for 144 × 143 = 20,592 currency pairs, which is why
+ * the picker can offer arbitrary corridors without a per-pair lookup.
+ *
+ * Yahoo quotes all 144 (verified: 143/143 on the first probe, plus USD
+ * itself). Fetched twelve at a time, the whole set takes about two seconds,
+ * so it comfortably fits the 30-minute rebuild.
+ */
+const ALL_CODES = JSON.parse(
+  readFileSync(join(HERE, "..", "lib", "currencies.ts"), "utf8")
+    .match(/export const CURRENCIES: Currency\[\] = (\[[\s\S]*?\n\]);/)[1],
+).map((c) => c.code);
+
+/** The three corridors the status strip shows, kept as full intraday series. */
 const SYMBOLS = { USD: "USDINR=X", EUR: "EURINR=X", GBP: "GBPINR=X" };
 
 /**
@@ -50,9 +68,18 @@ const SYMBOLS = { USD: "USDINR=X", EUR: "EURINR=X", GBP: "GBPINR=X" };
  *   *close* is the comparison that means something; comparing it against the
  *   tick five minutes earlier would be noise.
  */
+/**
+ * `keep` trims each series to what the UI actually reads before it is written.
+ *
+ * Yahoo returns up to 662 intraday bars and 66 daily closes per corridor. This
+ * file is imported by client code, so every point ships in the JavaScript
+ * bundle — untrimmed it came to 151 KB of data to render a 72-point sparkline
+ * and one day-over-day figure. Keeping a modest margin above what is consumed
+ * cuts that by roughly 85% with nothing visible lost.
+ */
 const SERIES_SPECS = [
-  { key: "intraday", query: "interval=5m&range=5d", precision: 16 },
-  { key: "daily", query: "interval=1d&range=3mo", precision: 10 },
+  { key: "intraday", query: "interval=5m&range=5d", precision: 16, keep: 120 },
+  { key: "daily", query: "interval=1d&range=3mo", precision: 10, keep: 40 },
 ];
 
 async function fetchSeries(symbol, spec) {
@@ -90,11 +117,59 @@ async function fetchSeries(symbol, spec) {
   if (series.length < 2) {
     throw new Error(`${symbol} ${spec.key}: only ${series.length} usable points`);
   }
-  return series;
+  // Newest points are the ones that get read, so trim from the front.
+  return spec.keep ? series.slice(-spec.keep) : series;
+}
+
+/**
+ * Latest price for `USD{code}=X` — units of `code` per 1 USD.
+ *
+ * USD itself is 1 by definition and has no symbol to look up.
+ */
+async function fetchPerUsd(code) {
+  if (code === "USD") return 1;
+  const url =
+    `https://query1.finance.yahoo.com/v8/finance/chart/USD${code}=X` +
+    `?interval=1d&range=5d`;
+  const res = await fetch(url, {
+    headers: { "User-Agent": "Mozilla/5.0 (compatible; clearroute-build/1.0)" },
+    signal: AbortSignal.timeout(15_000),
+  });
+  if (!res.ok) return null;
+  const json = await res.json();
+  const px = json?.chart?.result?.[0]?.meta?.regularMarketPrice;
+  return typeof px === "number" && Number.isFinite(px) && px > 0 ? px : null;
+}
+
+/** Fetch the whole table, twelve at a time so it stays quick and polite. */
+async function fetchAllPerUsd() {
+  const perUsd = {};
+  const missing = [];
+  const CONCURRENCY = 12;
+
+  for (let i = 0; i < ALL_CODES.length; i += CONCURRENCY) {
+    const batch = ALL_CODES.slice(i, i + CONCURRENCY);
+    const results = await Promise.all(batch.map((c) => fetchPerUsd(c).catch(() => null)));
+    batch.forEach((code, j) => {
+      const px = results[j];
+      // A currency with no quote is simply omitted. The picker reads this
+      // table, so an omitted currency disappears from the options rather than
+      // being offered and then failing — never a fabricated rate.
+      if (px === null) missing.push(code);
+      else perUsd[code] = Math.round(px * 1e6) / 1e6;
+    });
+  }
+  return { perUsd, missing };
 }
 
 async function main() {
-  const out = { source: "Yahoo Finance", fetchedAt: null, series: {}, intraday: {} };
+  const out = {
+    source: "Yahoo Finance",
+    fetchedAt: null,
+    series: {},
+    intraday: {},
+    perUsd: {},
+  };
 
   for (const [code, symbol] of Object.entries(SYMBOLS)) {
     for (const spec of SERIES_SPECS) {
@@ -110,6 +185,13 @@ async function main() {
         `latest ${i.at(-1).date} = ${i.at(-1).rate}`,
     );
   }
+
+  const { perUsd, missing } = await fetchAllPerUsd();
+  out.perUsd = perUsd;
+  console.log(
+    `\n  ${Object.keys(perUsd).length}/${ALL_CODES.length} currencies quoted against USD` +
+      (missing.length ? ` · omitted: ${missing.join(", ")}` : ""),
+  );
 
   out.fetchedAt = new Date().toISOString();
 

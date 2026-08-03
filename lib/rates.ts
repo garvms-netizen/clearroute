@@ -51,6 +51,8 @@ type Generated = {
   series: Partial<Record<Corridor, Close[]>>;
   /** 5-minute bars — what the trend line draws and where the quote comes from. */
   intraday?: Partial<Record<Corridor, Close[]>>;
+  /** Units of each currency per 1 USD — the table every cross-rate derives from. */
+  perUsd?: Record<string, number>;
 };
 
 const data = generated as Generated;
@@ -130,6 +132,36 @@ export const hasLiveData = CORRIDORS.some((c) => closesFor(c).length > 0);
 
 export const RATE_SOURCE = data.source;
 
+/* --------------------------------------------------------------------------
+   Arbitrary currency pairs.
+
+   One USD-based table covers the whole world. With `perUSD[X]` for every X,
+   any pair is a division, so 144 fetched quotes support 144 × 143 = 20,592
+   pairs without a single per-pair lookup.
+   -------------------------------------------------------------------------- */
+
+const PER_USD: Record<string, number> = data.perUsd ?? {};
+
+/** Currencies with a quote in this build. Anything absent is not offered. */
+export const QUOTED_CODES = Object.keys(PER_USD);
+
+export const isQuoted = (code: string) => code in PER_USD;
+
+/**
+ * Units of `from` per 1 unit of `to` — the site's convention throughout, so
+ * the recipient receives `amount / rate`.
+ *
+ * Returns null when either side has no quote in this build. Callers must
+ * handle that rather than substituting a guess: a fabricated rate is the one
+ * thing this project will not print.
+ */
+export function crossRate(from: string, to: string): number | null {
+  const a = PER_USD[from.toUpperCase()];
+  const b = PER_USD[to.toUpperCase()];
+  if (!a || !b) return null;
+  return a / b;
+}
+
 /** Absolute and percentage change between the last two real closes. */
 export function dayChange(closes: Close[]) {
   if (closes.length < 2) return null;
@@ -163,19 +195,57 @@ export const symbolFor = (code: string) => SYMBOLS[code] ?? "";
 export const formatRate = (n: number) => n.toFixed(4);
 
 /**
- * Indian digit grouping for rupees (₹5,00,000.00), Western grouping for
- * everything else. Getting this wrong is immediately visible to the audience
- * this site is written for.
+ * A quote written the way it actually reads.
+ *
+ * The internal convention is "units of `from` per 1 unit of `to`", which is
+ * the number the arithmetic needs. It displays well for INR→USD (83.4210) and
+ * badly for the reverse: GBP→INR is 0.0078, which tells a reader almost
+ * nothing and looks like a rounding error.
+ *
+ * Now that any of 144 currencies can send to any other, roughly half of all
+ * pairs fall on the unreadable side. So the headline figure is always shown in
+ * whichever direction produces a number at or above 1, spelled out as
+ * "1 GBP = 128.4617 INR". The underlying rate is untouched — only which way
+ * round it is printed.
+ */
+export function readableQuote(from: string, to: string, rate: number) {
+  if (rate >= 1) {
+    return { figure: formatRate(rate), unit: to, per: from };
+  }
+  return { figure: formatRate(1 / rate), unit: from, per: to };
+}
+
+/**
+ * Money, formatted for the currency it is in.
+ *
+ * Delegates to Intl rather than concatenating a symbol from a lookup table.
+ * With 144 currencies in play a hand-kept symbol map is wrong by definition —
+ * it produced a bare "500,000.00" for Brazilian reais, with no indication of
+ * what the number even was. Intl knows every ISO code and places the symbol
+ * where that currency actually places it.
+ *
+ * Rupees use en-IN so the grouping is ₹5,00,000.00 rather than ₹500,000.00.
+ * Getting that wrong is immediately visible to the audience this site is
+ * written for.
  */
 export function formatMoney(amount: number, currency: string): string {
-  const locale = currency === "INR" ? "en-IN" : "en-US";
-  return (
-    symbolFor(currency) +
-    amount.toLocaleString(locale, {
+  const code = currency.toUpperCase();
+  const locale = code === "INR" ? "en-IN" : "en-US";
+  try {
+    return new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: code,
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
-    })
-  );
+    }).format(amount);
+  } catch {
+    // Unknown or malformed code — label it rather than printing a naked
+    // number that could be read as any currency at all.
+    return `${code} ${amount.toLocaleString(locale, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+  }
 }
 
 /**

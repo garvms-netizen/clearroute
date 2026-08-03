@@ -6,7 +6,14 @@ import { Callout } from "@/components/ui/Callout";
 import { DataList, DataRow } from "@/components/ui/DataRow";
 import { StatTile } from "@/components/ui/StatTile";
 import { TransactionMap } from "./TransactionMap";
-import { formatMoney, formatRate, formatRateTime } from "@/lib/rates";
+import {
+  formatMoney,
+  formatRate,
+  formatRateTime,
+  readableQuote,
+  symbolFor,
+} from "@/lib/rates";
+import { CurrencyPicker } from "@/components/ui/CurrencyPicker";
 import {
   BANK_RATE,
   BANK_SETTLEMENT,
@@ -38,8 +45,8 @@ export function StepRoute({ t, mode }: { t: T; mode: Mode }) {
             Amount to send
           </label>
           <div className="flex items-center gap-2">
-            <span className="mono text-sm" style={{ color: "var(--text-dim)" }}>
-              ₹
+            <span className="mono shrink-0 text-sm" style={{ color: "var(--text-dim)" }}>
+              {symbolFor(t.from) || t.from}
             </span>
             <input
               id="amount"
@@ -54,31 +61,30 @@ export function StepRoute({ t, mode }: { t: T; mode: Mode }) {
           </div>
         </div>
 
-        <div className="mb-6">
-          <label htmlFor="corridor" className="mb-2 block text-[13px]" style={{ color: "var(--text-dim)" }}>
-            Sending in / receiving in
-          </label>
-          <select
-            id="corridor"
-            value={t.corridor}
-            onChange={(e) => t.setCorridor(e.target.value as typeof t.corridor)}
-            className="w-full px-3.5 py-3 text-[15px]"
-            style={fieldStyle}
-          >
-            {t.corridors.map((c) => (
-              <option key={c} value={c}>
-                INR → {c}
-              </option>
-            ))}
-          </select>
+        {/* Both sides are searchable by currency, code or country — most
+            people know where they are sending money, not the ISO code for the
+            currency there. */}
+        <div className="mb-5 grid gap-4 sm:grid-cols-2">
+          <CurrencyPicker
+            label="From"
+            value={t.from}
+            onChange={t.setFrom}
+            exclude={t.to}
+          />
+          <CurrencyPicker
+            label="To"
+            value={t.to}
+            onChange={t.setTo}
+            exclude={t.from}
+          />
         </div>
 
-        <Button size="lg" onClick={t.lockLeg1}>
+        <Button size="lg" onClick={t.lockLeg1} disabled={t.quotedRate === null}>
           Lock this rate →
         </Button>
 
         <p className="mt-5 text-[13px] leading-relaxed" style={{ color: "var(--text-dim)", maxWidth: "56ch" }}>
-          No account needed to see this. The rate above is the real reference
+          No account needed to see this. The rate above is the published market
           rate — not a marked-up customer rate.
         </p>
       </div>
@@ -94,13 +100,30 @@ export function StepRoute({ t, mode }: { t: T; mode: Mode }) {
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="eyebrow mb-2">
-              {t.isWorkedExample ? "Illustrative example" : "Indicative rate"}
+              {t.isWorkedExample ? "Illustrative example" : "Published rate"}
             </p>
-            <p className="mono text-3xl font-medium sm:text-4xl" style={{ color: "var(--accent-ink)" }}>
-              {formatRate(t.quotedRate)}
-            </p>
-            <p className="mono mt-1 text-[12px]" style={{ color: "var(--text-dim)" }}>
-              INR → {t.corridor}
+            {(() => {
+              if (t.quotedRate === null) {
+                return (
+                  <p className="mono text-3xl font-medium sm:text-4xl" style={{ color: "var(--accent-ink)" }}>
+                    —
+                  </p>
+                );
+              }
+              const q = readableQuote(t.from, t.to, t.quotedRate);
+              return (
+                <>
+                  <p className="mono text-3xl font-medium sm:text-4xl" style={{ color: "var(--accent-ink)" }}>
+                    {q.figure}
+                  </p>
+                  <p className="mono mt-1 text-[12px]" style={{ color: "var(--text-dim)" }}>
+                    1 {q.unit} = {q.figure} {q.per}
+                  </p>
+                </>
+              );
+            })()}
+            <p className="mono mt-0.5 text-[12px]" style={{ color: "var(--text-dim)" }}>
+              {t.from} → {t.to}
             </p>
           </div>
           <span
@@ -110,16 +133,26 @@ export function StepRoute({ t, mode }: { t: T; mode: Mode }) {
           />
         </div>
 
-        <DataList className="mt-5">
-          <DataRow label="You send" value={formatMoney(t.amount, "INR")} />
-          <DataRow
-            label="Recipient receives"
-            value={formatMoney(t.receiveAmount, t.corridor)}
-            strong
-          />
-          <DataRow label="Estimated hops" value="2" />
-          <DataRow label="Estimated settlement" value="~4 hours" />
-        </DataList>
+        {/* A pair we cannot price says so, rather than showing a placeholder
+            figure. Printing a rate we do not have is the one thing this
+            project will not do. */}
+        {t.quotedRate === null ? (
+          <p className="mt-5 text-[13px] leading-relaxed" style={{ color: "var(--text-dim)" }}>
+            No published quote for {t.from} → {t.to} in this build. Pick another
+            currency and the figures return.
+          </p>
+        ) : (
+          <DataList className="mt-5">
+            <DataRow label="You send" value={formatMoney(t.amount, t.from)} />
+            <DataRow
+              label="Recipient receives"
+              value={formatMoney(t.receiveAmount ?? 0, t.to)}
+              strong
+            />
+            <DataRow label="Estimated hops" value="2" />
+            <DataRow label="Estimated settlement" value="~4 hours" />
+          </DataList>
+        )}
 
         {/* The page is explicit about which number the visitor is looking at.
             Blurring the illustrative example into the live rate is how a demo
@@ -128,8 +161,9 @@ export function StepRoute({ t, mode }: { t: T; mode: Mode }) {
           {t.isWorkedExample ? (
             <>
               Worked example at the illustrative rate, so these figures match
-              /pricing exactly. Change the amount or currency to quote from the
-              latest published close instead.
+              /pricing exactly. Change the amount or either currency to quote
+              from the latest published rate instead — any of 144 currencies,
+              searchable by country.
             </>
           ) : !t.hasLiveData ? (
             <>Showing sample rates — no published data available.</>
