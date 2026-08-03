@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
-import { PageStub } from "@/components/shell/PageStub";
+import { PresenceIndex } from "@/components/presence/PresenceIndex";
 
-export const metadata: Metadata = { title: "Presence" };
+export const metadata: Metadata = {
+  title: "Our presence — one campaign, every channel",
+  description:
+    "Concept previews of the ClearRoute campaign across Instagram, LinkedIn, search and social ads, email, blog and product demo — built from the same two audiences and the same five claims.",
+};
 
 export default function Page() {
-  return (
-    <PageStub
-      eyebrow="OUR PRESENCE"
-      title="One campaign. Every channel. One argument."
-      stage="Stage 7"
-    />
-  );
+  return <PresenceIndex />;
 }

@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
-import { PageStub } from "@/components/shell/PageStub";
+import { CampaignsPreview } from "@/components/presence/CampaignsPreview";
 
-export const metadata: Metadata = { title: "Campaigns" };
+export const metadata: Metadata = {
+  title: "Search & social ads — concept preview",
+  description:
+    "Three search ad groups and seven paid-social variants, each labelled with its keyword cluster or audience segment, with live landing page links.",
+};
 
 export default function Page() {
-  return (
-    <PageStub
-      eyebrow="OUR PRESENCE · ADS"
-      title="Concept preview: search & social ads"
-      stage="Stage 7"
-    />
-  );
+  return <CampaignsPreview />;
 }

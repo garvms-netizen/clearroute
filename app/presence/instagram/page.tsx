@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
-import { PageStub } from "@/components/shell/PageStub";
+import { InstagramPreview } from "@/components/presence/InstagramPreview";
 
-export const metadata: Metadata = { title: "Instagram" };
+export const metadata: Metadata = {
+  title: "Instagram — concept preview",
+  description:
+    "A six-slide awareness carousel aimed at people sending money themselves, argued from a familiar experience rather than product features.",
+};
 
 export default function Page() {
-  return (
-    <PageStub
-      eyebrow="OUR PRESENCE · INSTAGRAM"
-      title="Concept preview: Instagram"
-      stage="Stage 7"
-    />
-  );
+  return <InstagramPreview />;
 }

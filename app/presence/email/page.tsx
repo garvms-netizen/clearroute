@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
-import { PageStub } from "@/components/shell/PageStub";
+import { EmailPreview } from "@/components/presence/EmailPreview";
 
-export const metadata: Metadata = { title: "Email" };
+export const metadata: Metadata = {
+  title: "Email sequence — concept preview",
+  description:
+    "Nine messages across conversion, onboarding and retention, each stating what triggers it and what job it does.",
+};
 
 export default function Page() {
-  return (
-    <PageStub
-      eyebrow="OUR PRESENCE · EMAIL"
-      title="Concept preview: the email sequence"
-      stage="Stage 7"
-    />
-  );
+  return <EmailPreview />;
 }

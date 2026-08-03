@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
-import { PageStub } from "@/components/shell/PageStub";
+import { LinkedInPreview } from "@/components/presence/LinkedInPreview";
 
-export const metadata: Metadata = { title: "Linkedin" };
+export const metadata: Metadata = {
+  title: "LinkedIn — concept preview",
+  description:
+    "Three posts aimed at finance teams. Two build the insight layer; only the third names the product.",
+};
 
 export default function Page() {
-  return (
-    <PageStub
-      eyebrow="OUR PRESENCE · LINKEDIN"
-      title="Concept preview: LinkedIn"
-      stage="Stage 7"
-    />
-  );
+  return <LinkedInPreview />;
 }
