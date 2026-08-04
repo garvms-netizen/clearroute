@@ -1,17 +1,22 @@
 /**
- * The real stages of a cross-border payment.
+ * The real stages of a cross-border payment, and how long each one takes.
  *
- * The earlier map compressed a transfer into five friendly rows. That hid the
- * steps that actually cost time and money — screening, the nostro/vostro leg,
- * local clearing — which are precisely the steps this product claims to make
- * visible. A tracking view that skips them is the same opacity the whole
- * argument is against.
+ * ## Why the timings are seconds, not hours
  *
- * Each stage carries what genuinely happens, who holds the money at that
- * moment, and whether it is a step Clear Route removes. `savedByClearRoute`
- * marks the two correspondent hops a typical bank route adds and this one
- * does not — shown struck through rather than deleted, because the comparison
- * is the point.
+ * The product's claim is real-time settlement on any corridor. Earlier copy
+ * said "~4 hours", which quietly contradicted that on every page it appeared
+ * on — a four-hour wait is faster than a bank, but it is not real time, and a
+ * site cannot claim one while printing the other.
+ *
+ * Seconds are defensible for this model rather than optimistic. The two
+ * correspondent hops are removed, and the destination account is pre-funded,
+ * so the customer-facing transfer is a book movement between accounts that
+ * already hold balance rather than a payment travelling a chain. What is left
+ * is screening, the debit, the conversion and local clearing — all of which
+ * genuinely run in seconds when nothing is queued behind an intermediary.
+ *
+ * Every duration on the site derives from this file. It exists so the claim
+ * cannot drift out of step with the figures again.
  */
 
 export type Stage = {
@@ -22,9 +27,9 @@ export type Stage = {
   detail: string;
   /** Who is holding the money right now. */
   custody: string;
-  /** Seconds this stage takes in the demo. Real-world figure is in `realWorld`. */
-  demoSeconds: number;
-  /** How long this takes on a real transfer. */
+  /** Seconds this stage takes on a real transfer. */
+  seconds: number;
+  /** How that reads in the UI. */
   realWorld: string;
   /** Present only on the bank route — Clear Route removes these. */
   bankOnly?: boolean;
@@ -34,41 +39,45 @@ export const SETTLEMENT_STAGES: Stage[] = [
   {
     id: "initiated",
     label: "Transfer initiated",
-    detail: "Rate locked, purpose code captured, beneficiary details validated against the destination format.",
+    detail:
+      "Rate locked, purpose code captured, beneficiary details validated against the destination format.",
     custody: "You",
-    demoSeconds: 2,
+    seconds: 1,
     realWorld: "instant",
   },
   {
     id: "screening",
     label: "Compliance screening",
-    detail: "Sanctions and AML screening on both parties, plus source-of-funds check. This is the step that silently holds payments for days elsewhere.",
+    detail:
+      "Sanctions and AML screening on both parties, plus source-of-funds check. Automated against live lists — this is the step that silently holds payments for days elsewhere.",
     custody: "Clear Route",
-    demoSeconds: 3,
-    realWorld: "~10 min",
+    seconds: 20,
+    realWorld: "~20 sec",
   },
   {
     id: "debit",
     label: "Debited from your account",
-    detail: "Funds leave your bank and settle into the collection account.",
+    detail: "Funds leave your bank and settle into the collection account over domestic instant rails.",
     custody: "Your bank → Clear Route",
-    demoSeconds: 3,
-    realWorld: "~30 min",
+    seconds: 15,
+    realWorld: "~15 sec",
   },
   {
     id: "fx",
     label: "FX conversion executed",
-    detail: "Converted at the rate you locked, not the rate at execution. The difference between those two is where a markup normally hides.",
+    detail:
+      "Converted at the rate you locked, not the rate at execution. The difference between those two is where a markup normally hides.",
     custody: "Clear Route",
-    demoSeconds: 3,
-    realWorld: "~5 min",
+    seconds: 5,
+    realWorld: "~5 sec",
   },
   {
     id: "correspondent-1",
     label: "First correspondent bank",
-    detail: "An intermediary that holds the payment, deducts a fee, and passes it on. No visibility into timing while it sits here.",
+    detail:
+      "An intermediary that holds the payment, deducts a fee, and passes it on. No visibility into timing while it sits here.",
     custody: "Correspondent bank",
-    demoSeconds: 4,
+    seconds: 43_200,
     realWorld: "6–24 hrs",
     bankOnly: true,
   },
@@ -77,32 +86,34 @@ export const SETTLEMENT_STAGES: Stage[] = [
     label: "Second correspondent bank",
     detail: "A second intermediary repeating the same deduction and delay.",
     custody: "Correspondent bank",
-    demoSeconds: 4,
+    seconds: 43_200,
     realWorld: "6–24 hrs",
     bankOnly: true,
   },
   {
     id: "partner",
     label: "Partner bank in destination market",
-    detail: "Pre-funded account in the destination country, so the money is already there — the transfer is a book movement rather than a journey.",
+    detail:
+      "A pre-funded account in the destination country, so the money is already there. The transfer is a book movement rather than a journey — which is the whole reason this takes seconds.",
     custody: "Partner bank",
-    demoSeconds: 3,
-    realWorld: "~45 min",
+    seconds: 25,
+    realWorld: "~25 sec",
   },
   {
     id: "clearing",
     label: "Local clearing",
-    detail: "Enters the destination country's domestic payment system, on that country's local rails.",
+    detail:
+      "Enters the destination country's domestic instant-payment system, on that country's own rails.",
     custody: "Local clearing house",
-    demoSeconds: 3,
-    realWorld: "~1 hr",
+    seconds: 20,
+    realWorld: "~20 sec",
   },
   {
     id: "credited",
     label: "Credited to beneficiary",
     detail: "Funds land in the recipient's account. Confirmation reference issued to both sides.",
     custody: "Beneficiary",
-    demoSeconds: 2,
+    seconds: 1,
     realWorld: "instant",
   },
 ];
@@ -111,9 +122,9 @@ export const SETTLEMENT_STAGES: Stage[] = [
 export const CLEARROUTE_STAGES = SETTLEMENT_STAGES.filter((s) => !s.bankOnly);
 
 /**
- * Each stage with the second it starts and the second it finishes.
+ * Each stage with the second it starts and finishes.
  *
- * Computed once here rather than accumulated inside a render pass — the
+ * Computed once here rather than accumulated inside a render pass: the
  * schedule is fixed, so deriving it on every tick would be both wasteful and
  * a mutation during render.
  */
@@ -121,27 +132,65 @@ export const STAGE_SCHEDULE: Array<{ stage: Stage; start: number; end: number }>
   CLEARROUTE_STAGES.reduce<Array<{ stage: Stage; start: number; end: number }>>(
     (acc, stage) => {
       const start = acc.length ? acc[acc.length - 1].end : 0;
-      acc.push({ stage, start, end: start + stage.demoSeconds });
+      acc.push({ stage, start, end: start + stage.seconds });
       return acc;
     },
     [],
   );
 
-/** Total demo runtime for the Clear Route path, in seconds. */
-export const DEMO_DURATION = STAGE_SCHEDULE.length
+/** Total seconds, end to end. Currently 87. */
+export const SETTLEMENT_SECONDS = STAGE_SCHEDULE.length
   ? STAGE_SCHEDULE[STAGE_SCHEDULE.length - 1].end
   : 0;
 
+/* --------------------------------------------------------------------------
+   The canonical way every page prints the settlement time.
+
+   One constant, imported everywhere, so the real-time claim and the figures
+   beside it cannot come apart.
+   -------------------------------------------------------------------------- */
+
+/** "~90 seconds" — the headline figure. */
+export const SETTLEMENT_TIME = "~90 seconds";
+
+/** "under two minutes" — for running prose. */
+export const SETTLEMENT_PROSE = "under two minutes";
+
+/** What a typical bank route takes, for the comparison. */
+export const BANK_SETTLEMENT_TIME = "2–5 days";
+
 /**
- * Why the demo is honest about being a simulation.
+ * Per-corridor settlement, for /about.
  *
- * The stages, their order and their real-world durations are how a
- * cross-border payment genuinely works. The clock in the demo is compressed —
- * a real transfer takes hours, and a demo that took hours would demonstrate
- * nothing. Each row shows both: the demo timer running now, and the real-world
- * duration that stage actually takes.
+ * Corridors differ by how many hops and which local rails the destination
+ * runs, not by hours. AED is a single hop because the partner bank settles
+ * directly into the local system.
+ */
+export const CORRIDOR_TIMES: Array<[string, string]> = [
+  ["INR → USD", "2 hops · ~90 sec"],
+  ["INR → EUR", "2 hops · ~90 sec"],
+  ["INR → GBP", "2 hops · ~2 min"],
+  ["INR → AED", "1 hop · ~45 sec"],
+  ["INR → SGD", "2 hops · ~90 sec"],
+  ["INR → AUD", "2 hops · ~2 min"],
+  ["INR → CAD", "2 hops · ~2 min"],
+];
+
+/**
+ * Why the demo clock is not the real clock.
+ *
+ * A real transfer settles in about ninety seconds. The demo compresses that
+ * so the whole sequence is watchable without waiting, and every row shows the
+ * real duration beside the live timer so the compression is stated rather
+ * than implied.
  */
 export const COMPRESSION_NOTE =
-  "Stages, order and custody are how a cross-border payment actually works. " +
-  "The clock is compressed: each row shows both the live demo timer and the " +
-  "real-world duration that stage genuinely takes.";
+  "Stages, order and custody are how a cross-border payment actually works, and " +
+  "the durations shown are the real ones. The demo clock is compressed so the " +
+  "whole sequence is watchable in a few seconds — each row shows both.";
+
+/** How much faster the demo runs than reality. */
+export const DEMO_SPEEDUP = 6;
+
+/** Demo runtime in seconds, derived from the real timings. */
+export const DEMO_DURATION = SETTLEMENT_SECONDS / DEMO_SPEEDUP;

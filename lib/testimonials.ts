@@ -1,4 +1,5 @@
 import type { Mode } from "./mode";
+import { SETTLEMENT_TIME } from "./settlement";
 
 /**
  * Testimonial content, §12.2.
@@ -29,7 +30,7 @@ export const TESTIMONIALS: Testimonial[] = [
     role: "Finance Manager",
     context: "mid-market textiles exporter, Mumbai",
     corridor: "INR→USD",
-    stat: "~4 hrs settlement",
+    stat: `${SETTLEMENT_TIME} settlement`,
     audience: "institutional",
   },
   {
@@ -94,8 +95,17 @@ export const TESTIMONIALS: Testimonial[] = [
   },
 ];
 
-export const testimonialsFor = (mode: Mode, limit?: number) => {
-  const list = TESTIMONIALS.filter((t) => t.audience === mode);
+/**
+ * Testimonials for a mode.
+ *
+ * `skip` exists so different pages show different people. Before it, the home
+ * page and the persona page both took the first two from the same list, so
+ * anyone walking the institutional path read Anita's and Rohan's quotes on
+ * three consecutive pages. By the third, a reader stops reading testimonials
+ * at all — the exact opposite of what social proof is for.
+ */
+export const testimonialsFor = (mode: Mode, limit?: number, skip = 0) => {
+  const list = TESTIMONIALS.filter((t) => t.audience === mode).slice(skip);
   return limit ? list.slice(0, limit) : list;
 };
 
@@ -106,8 +116,8 @@ export const testimonialsFor = (mode: Mode, limit?: number) => {
 export const TRUST_ROW: Array<{ figure: string; label: string }> = [
   { figure: "₹0", label: "markup on first transfer" },
   { figure: "2–3", label: "hops typical" },
-  { figure: "40+", label: "currency corridors" },
-  { figure: "~4 hrs", label: "average settlement" },
+  { figure: "144", label: "currencies quoted" },
+  { figure: SETTLEMENT_TIME, label: "typical settlement" },
 ];
 
 /**

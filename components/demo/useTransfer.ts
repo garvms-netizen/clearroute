@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { crossRate, hasLiveData, latestClose } from "@/lib/rates";
 import { LEG1_RATE, LEG2_RATE, MARGIN_PCT, SEND_INR } from "@/lib/workedExample";
+import { SETTLEMENT_TIME } from "@/lib/settlement";
 
 /**
  * The transfer model behind the interactive demo.
@@ -100,7 +101,7 @@ export function useTransfer() {
         sendAmount: amount,
         receiveAmount,
         hops: 2,
-        eta: "~4 hours",
+        eta: SETTLEMENT_TIME,
         lockedAt: nowLabel(),
       },
     ]);
@@ -138,7 +139,7 @@ export function useTransfer() {
           sendAmount: first.receiveAmount,
           receiveAmount: round2(first.receiveAmount / rate),
           hops: 1,
-          eta: "~2 hours",
+          eta: "~45 sec",
           lockedAt: nowLabel(),
         },
       ];

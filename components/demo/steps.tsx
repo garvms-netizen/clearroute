@@ -14,6 +14,7 @@ import {
   symbolFor,
 } from "@/lib/rates";
 import { CurrencyPicker } from "@/components/ui/CurrencyPicker";
+import { LiveRatesPanel } from "./LiveRatesPanel";
 import {
   BANK_RATE,
   BANK_SETTLEMENT,
@@ -22,6 +23,7 @@ import {
   MARGIN_PCT,
 } from "@/lib/workedExample";
 import { OFFER_HEADLINE, OFFER_TERMS } from "@/lib/copy";
+import { SETTLEMENT_TIME } from "@/lib/settlement";
 import type { Mode } from "@/lib/mode";
 import type { useTransfer } from "./useTransfer";
 
@@ -150,7 +152,7 @@ export function StepRoute({ t, mode }: { t: T; mode: Mode }) {
               strong
             />
             <DataRow label="Estimated hops" value="2" />
-            <DataRow label="Estimated settlement" value="~4 hours" />
+            <DataRow label="Estimated settlement" value={SETTLEMENT_TIME} accent />
           </DataList>
         )}
 
@@ -180,6 +182,13 @@ export function StepRoute({ t, mode }: { t: T; mode: Mode }) {
             Rate held from confirmation through settlement.
           </p>
         )}
+
+        {/* Published rates for the headline corridors, in both modes. Personal
+            mode has no status strip, so without this a retail visitor never
+            sees a real market figure anywhere on the site. */}
+        <div className="mt-5">
+          <LiveRatesPanel />
+        </div>
       </div>
     </div>
   );

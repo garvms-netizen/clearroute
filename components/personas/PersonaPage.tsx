@@ -29,7 +29,9 @@ import type { Mode } from "@/lib/mode";
 export function PersonaPage({ mode }: { mode: Mode }) {
   const p = PERSONAS[mode];
   const institutional = mode === "institutional";
-  const voices = testimonialsFor(mode, 2);
+  // Skips the two the home page already showed, so walking the institutional
+  // path doesn't mean reading the same quotes three pages running.
+  const voices = testimonialsFor(mode, 2, 3);
   const Art = institutional ? PersonaRohan : PersonaPriya;
 
   return (

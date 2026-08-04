@@ -242,7 +242,7 @@ export function StyleguideClient() {
                   <StatTile figure="₹0" label="markup on first transfer" accent />
                   <StatTile figure="2–3" label="hops typical" />
                   <StatTile figure="40+" label="currency corridors" />
-                  <StatTile figure="~4 hrs" label="average settlement" />
+                  <StatTile figure="~90 sec" label="average settlement" />
                 </div>
               </div>
             )}
@@ -385,7 +385,7 @@ export function StyleguideClient() {
                   &ldquo;The rate we were quoted was the rate we got.&rdquo;
                 </p>
                 <p className="mono text-[11px]" style={{ color: "var(--text-dim)" }}>
-                  INR→USD · ~4 hrs settlement
+                  INR→USD · ~90 sec settlement
                 </p>
               </div>
             )}

@@ -6,10 +6,13 @@ import { Button } from "@/components/ui/Button";
 import { Callout } from "@/components/ui/Callout";
 import { StatTile } from "@/components/ui/StatTile";
 import {
+  BANK_SETTLEMENT_TIME,
   CLEARROUTE_STAGES,
   COMPRESSION_NOTE,
   DEMO_DURATION,
+  DEMO_SPEEDUP,
   SETTLEMENT_STAGES,
+  SETTLEMENT_TIME,
   STAGE_SCHEDULE,
   type Stage,
 } from "@/lib/settlement";
@@ -57,12 +60,16 @@ export function LiveSettlement({ mode }: { mode: Mode }) {
     return () => clearInterval(id);
   }, [runId]);
 
-  // The schedule is a module constant, so this only reads it.
+  // The schedule is in *real* seconds; the demo runs DEMO_SPEEDUP times
+  // faster. Converting here keeps one set of durations in lib/settlement.ts
+  // rather than a real set and a demo set that can drift apart.
+  const realPosition = elapsed * DEMO_SPEEDUP;
+
   const withState = STAGE_SCHEDULE.map(({ stage, start, end }) => {
     const state: "done" | "active" | "pending" =
-      elapsed >= end ? "done" : elapsed >= start ? "active" : "pending";
+      realPosition >= end ? "done" : realPosition >= start ? "active" : "pending";
     const progress =
-      state === "active" ? Math.min(1, (elapsed - start) / stage.demoSeconds) : state === "done" ? 1 : 0;
+      state === "active" ? Math.min(1, (realPosition - start) / stage.seconds) : state === "done" ? 1 : 0;
     return { stage, state, progress };
   });
 
@@ -89,7 +96,7 @@ export function LiveSettlement({ mode }: { mode: Mode }) {
             accent
           />
           <StatTile figure={formatElapsed(Math.floor(elapsed))} label="elapsed, live" size="sm" />
-          <StatTile figure="~4 hrs" label="real-world equivalent" size="sm" />
+          <StatTile figure={SETTLEMENT_TIME} label="real-world settlement" size="sm" />
           {complete && <Badge tone="accent">Settled</Badge>}
           {!complete && <Badge tone="warn">In flight</Badge>}
         </div>
@@ -136,17 +143,18 @@ export function LiveSettlement({ mode }: { mode: Mode }) {
           <p className="text-[13px] leading-relaxed" style={{ color: "var(--text-dim)" }}>
             The struck-through rows are the correspondent banks a typical route
             adds. Each holds the payment for 6–24 hours and deducts a fee on the
-            way past. Removing them is the whole mechanism behind{" "}
+            way past. Removing them, and pre-funding the destination account, is
+            what turns{" "}
+            <span className="mono">{BANK_SETTLEMENT_TIME}</span> into{" "}
             <span className="mono" style={{ color: "var(--accent-ink)" }}>
-              ~4 hrs
-            </span>{" "}
-            instead of{" "}
-            <span className="mono">2–5 days</span>.
+              {SETTLEMENT_TIME}
+            </span>
+            .
           </p>
         </div>
 
         <p className="mono mt-5 text-[11px] leading-relaxed" style={{ color: "var(--text-dim)" }}>
-          {COMPRESSION_NOTE}
+          {COMPRESSION_NOTE} Running at {DEMO_SPEEDUP}× real speed.
         </p>
       </div>
     </div>

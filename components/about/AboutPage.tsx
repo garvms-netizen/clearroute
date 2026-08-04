@@ -10,6 +10,7 @@ import { SectionHeader } from "@/components/ui/SectionHeader";
 import { Section } from "@/components/home/Section";
 import { RouteMark } from "@/components/art/RouteMark";
 import { WorldPresence } from "@/components/art/WorldPresence";
+import { CORRIDOR_TIMES } from "@/lib/settlement";
 
 /**
  * /about, §13.
@@ -39,22 +40,34 @@ const PRINCIPLES = [
   },
 ];
 
-const CORRIDORS: Array<[string, string]> = [
-  ["INR → USD", "2 hops · ~4 hours"],
-  ["INR → EUR", "2 hops · ~4 hours"],
-  ["INR → GBP", "2 hops · ~5 hours"],
-  ["INR → AED", "1 hop · ~2 hours"],
-  ["INR → SGD", "2 hops · ~4 hours"],
-  ["INR → AUD", "2 hops · ~6 hours"],
-  ["INR → CAD", "2 hops · ~6 hours"],
+/**
+ * One person holds every role, because one person does.
+ *
+ * This is a university marketing project by a single author. Inventing four
+ * colleagues would be the same kind of fabrication the site spends its
+ * testimonials section labelling — so the roles are listed honestly as one
+ * name wearing all of them.
+ */
+const TEAM = [
+  {
+    role: "Founder",
+    background: "Set the argument: the rate is the cost, and nobody shows it.",
+  },
+  {
+    role: "Product",
+    background: "Designed the rate lock, the multi-leg session and the transaction map.",
+  },
+  {
+    role: "Compliance",
+    background: "Wrote the regulatory posture, and the note saying it is fictional.",
+  },
+  {
+    role: "Engineering",
+    background: "Built the site, the live rate pipeline and the settlement demo.",
+  },
 ];
 
-const TEAM = [
-  { name: "A. Raghunathan", role: "Founder", background: "Ten years in correspondent banking operations." },
-  { name: "S. Bhattacharya", role: "Head of Product", background: "Built reconciliation tooling for a mid-market ERP." },
-  { name: "N. Qureshi", role: "Head of Compliance", background: "Payments licensing and FEMA reporting." },
-  { name: "D. Fernandes", role: "Head of Engineering", background: "Distributed settlement systems." },
-];
+const AUTHOR = "Garv Agarwal";
 
 const TIMELINE = [
   { when: "The observation", what: "A vendor payment arrives short. The fee was disclosed; the rate was not." },
@@ -130,12 +143,12 @@ export function AboutPage() {
             <SectionHeader
               id="corridors"
               eyebrow="WHERE WE OPERATE"
-              title="India outbound."
-              lede="Hop counts and settlement windows are illustrative and consistent with the figures used in the demo."
+              title="India outbound, in seconds."
+              lede="Corridors differ by how many hops and which local rails the destination runs — not by hours. These are the same figures the settlement demo counts down."
             />
             <DataList className="mt-6">
-              {CORRIDORS.map(([corridor, detail]) => (
-                <DataRow key={corridor} label={corridor} value={detail} />
+              {CORRIDOR_TIMES.map(([corridor, detail]) => (
+                <DataRow key={corridor} label={corridor} value={detail} accent />
               ))}
             </DataList>
           </div>
@@ -148,26 +161,26 @@ export function AboutPage() {
         <SectionHeader
           id="team"
           eyebrow="TEAM"
-          title="Illustrative team — this is a fictional company."
-          lede="These are placeholders standing in for roles a real deployment would need. The avatars are marks derived from the logo, not generated faces."
+          title="One person, four hats."
+          lede="Clear Route is a university marketing project with a single author, so every role below is held by the same person. Inventing colleagues would be the kind of fabrication this site spends its testimonials section labelling."
         />
         <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {TEAM.map((m, i) => (
-            <Card key={m.name}>
+            <Card key={m.role}>
               <span
                 className="flex h-14 w-14 items-center justify-center"
                 style={{
                   background: "var(--surface-2)",
                   border: "1px solid var(--line)",
                   borderRadius: "var(--radius)",
-                  // Rotating each mark makes four distinct avatars from one
-                  // asset without inventing four faces.
+                  // Rotating the mark distinguishes the four cards without
+                  // inventing four faces.
                   transform: `rotate(${i * 90}deg)`,
                 }}
               >
                 <RouteMark size={20} decorative />
               </span>
-              <h3 className="mt-4 text-[15px] font-semibold">{m.name}</h3>
+              <h3 className="mt-4 text-[15px] font-semibold">{AUTHOR}</h3>
               <p className="mono text-[11px]" style={{ color: "var(--accent-ink)" }}>
                 {m.role}
               </p>
@@ -178,9 +191,9 @@ export function AboutPage() {
           ))}
         </div>
         <Callout variant="project-note" className="mt-6">
-          These people do not exist. Names, roles and backgrounds are
-          placeholders for an academic project — no photograph, likeness or
-          generated face of any person appears anywhere on this site.
+          {AUTHOR} is the sole author of this project. No photograph, likeness
+          or generated face of any person appears anywhere on this site — the
+          avatars above are the Clear Route mark, rotated.
         </Callout>
       </Section>
 

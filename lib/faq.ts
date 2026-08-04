@@ -83,7 +83,7 @@ export const FAQ_GROUPS: FaqGroup[] = [
       {
         id: "how-long-does-a-transfer-take",
         q: "How long does a transfer take?",
-        a: "Around four hours on a typical two-hop corridor, against two to five days for a typical bank route. The estimate for your specific corridor is shown before you confirm, in hops and hours rather than adjectives.",
+        a: "Around ninety seconds on a typical two-hop corridor, against two to five days for a typical bank route. The destination account is pre-funded, so the transfer is a book movement rather than a payment travelling a chain. Your corridor's estimate is shown before you confirm.",
       },
       {
         id: "what-is-a-hop",

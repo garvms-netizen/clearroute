@@ -1,4 +1,5 @@
 import type { Mode } from "./mode";
+import { BANK_SETTLEMENT_TIME, SETTLEMENT_TIME } from "./settlement";
 
 /**
  * Home page content, §8.
@@ -29,7 +30,7 @@ export const PROBLEM_STATS: Stat[] = [
   },
   { figure: "$10–30", label: "Taken by each correspondent bank in the chain" },
   {
-    figure: "2–5 days",
+    figure: BANK_SETTLEMENT_TIME,
     label: "Average settlement time for a business cross-border payment",
   },
 ];
@@ -76,7 +77,7 @@ export const MECHANISMS: Array<{ title: string; body: string }> = [
   },
   {
     title: "Minimal intermediaries",
-    body: "Fewer banks in the chain means fewer fees deducted and less time in transit.",
+    body: `Fewer banks in the chain means fewer fees deducted and less time in transit — ${SETTLEMENT_TIME} instead of ${BANK_SETTLEMENT_TIME}.`,
   },
   {
     title: "One session, every currency",
@@ -112,7 +113,7 @@ export const OBJECTIONS: Objection[] = [
     id: "transfer-fails",
     question: "What happens if a transfer fails or gets stuck?",
     answer:
-      "Every transfer carries an end-to-end tracking reference. If a payment is held at any hop, you'll see exactly where and why, and our team works the resolution directly rather than asking you to chase your bank.",
+      "You see the hop it stopped at and why, while it is still stopped — not in a summary afterwards. Resolution is worked from our side rather than handed back to you to chase with your bank.",
   },
   {
     id: "trust-large-sums",

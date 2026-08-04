@@ -19,6 +19,7 @@ import {
 } from "@/lib/homeContent";
 import { OFFER_HEADLINE, OFFER_NO_PRESSURE, OFFER_TERMS } from "@/lib/copy";
 import { testimonialsFor, TRUST_ROW } from "@/lib/testimonials";
+import { SETTLEMENT_TIME } from "@/lib/settlement";
 import { track } from "@/lib/track";
 
 import { Section } from "./Section";
@@ -29,7 +30,8 @@ import { Eyebrow } from "@/components/ui/Eyebrow";
 import { Rating } from "@/components/ui/Rating";
 import { SectionHeader } from "@/components/ui/SectionHeader";
 import { StatTile } from "@/components/ui/StatTile";
-import { VideoPlayer } from "@/components/ui/VideoPlayer";
+import { FilmPlayer } from "@/components/demo/FilmPlayer";
+import { FILMS } from "@/lib/films";
 import { RouteContrast } from "@/components/art/RouteContrast";
 import { GlobeConnection } from "@/components/art/GlobeConnection";
 import { FeeStack } from "@/components/art/FeeStack";
@@ -111,7 +113,7 @@ export function HomePage({ mode }: { mode: Mode }) {
               </div>
               <GlobeConnection className="mx-auto mt-12 w-full max-w-2xl" />
               <p className="mono mt-1 text-[11px]" style={{ color: "var(--text-dim)" }}>
-                2 hops · ~4 hrs typical
+                2 hops · {SETTLEMENT_TIME} typical
               </p>
             </div>
           )}
@@ -301,13 +303,7 @@ export function HomePage({ mode }: { mode: Mode }) {
               </Link>
             </p>
           </div>
-          <VideoPlayer
-            src={video.src}
-            title={video.title}
-            runtime={video.runtime}
-            poster={<RouteContrast decorative />}
-            onPlay={() => track("video_play", mode)}
-          />
+          <FilmPlayer film={FILMS[mode]} />
         </div>
       </Section>
 

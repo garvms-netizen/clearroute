@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMode } from "@/components/ModeProvider";
 import { Accordion } from "@/components/ui/Accordion";
 import { Button } from "@/components/ui/Button";
@@ -215,35 +216,49 @@ export function PricingPage() {
       {/* ---------- Pricing FAQ ---------- */}
       <Section labelledBy="pricing-faq">
         <SectionHeader id="pricing-faq" eyebrow="PRICING FAQ" title="Questions about cost" />
+        {/* These are questions the FAQ does *not* answer. The general ones —
+            is the rate marked up, are there receiving fees, what happens on a
+            failure — live at /faq, and repeating them here word for word made
+            two accordions with identical contents. */}
         <Accordion
           className="mt-8"
           items={[
             {
-              id: "is-the-rate-marked-up",
-              question: "Is the rate marked up?",
+              id: "why-a-percentage-not-a-flat-fee",
+              question: "Why a percentage rather than a flat fee?",
               answer:
-                "No. The rate applied is the live interbank reference rate, locked at confirmation. Our margin is a separate, itemised line shown before you confirm — it is never folded into the exchange rate.",
+                "A flat fee punishes small transfers and undercharges large ones, which pushes providers into hiding the difference in the rate. A percentage scales honestly with what is at risk, and stays visible as its own line.",
             },
             {
-              id: "are-there-receiving-fees",
-              question: "Are there receiving fees?",
+              id: "how-does-this-compare-on-small-transfers",
+              question: "Is 0.40% competitive on a small transfer?",
               answer:
-                "Network and correspondent fees are absorbed by Clear Route. A recipient's own bank may apply its own charge, which is outside our control; where we can estimate it, we show it before you send rather than after.",
+                "On ₹10,000 the margin is ₹40, against roughly ₹300–500 of hidden spread on a typical bank route at 3%. The gap narrows in absolute terms on small amounts but the proportion does not.",
             },
             {
-              id: "what-if-my-transfer-fails",
-              question: "What if my transfer fails?",
+              id: "who-absorbs-the-network-fees",
+              question: "How can network fees be absorbed?",
               answer:
-                "Every transfer carries an end-to-end tracking reference. If a payment is held at any hop you will see exactly where and why, and the margin on a failed transfer is not charged.",
+                "Because there are fewer of them. Pre-funding the destination account removes the correspondent hops that charge per transaction, so what is absorbed is a much smaller bill than a routed payment would generate.",
             },
             {
-              id: "does-the-margin-change-by-currency",
-              question: "Does the margin change by currency?",
+              id: "will-the-margin-change",
+              question: "Will the 0.40% change?",
               answer:
-                "No. It is 0.40% of the send amount on every corridor we support. Currencies differ in how many hops and how long they take, and both of those are shown per corridor before you confirm.",
+                "Any change would be published here before it applied, and the rate shown before you confirm is always the rate charged. Volume-based review is a conversation, not a hidden tier.",
             },
           ]}
         />
+
+        <p className="mt-6 text-sm">
+          <Link
+            href="/faq#rates-and-fees"
+            className="underline underline-offset-4"
+            style={{ color: "var(--accent-ink)" }}
+          >
+            Rate mark-ups, receiving fees and failed transfers are answered in the FAQ →
+          </Link>
+        </p>
       </Section>
     </>
   );

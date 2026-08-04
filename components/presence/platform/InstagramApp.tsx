@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { RouteMark } from "@/components/art/RouteMark";
-import { SlideVisual } from "../SlideVisual";
+import { SlideCard } from "./SlideCard";
 import { IG_CAROUSEL, IG_POSTS, IG_PROFILE } from "@/lib/campaign";
 import { track } from "@/lib/track";
 import {
@@ -203,12 +203,17 @@ export function InstagramApp() {
                       if (t.carousel) { setSlide(0); setOpen({ kind: "carousel", i: 0 }); track("carousel_open", "instagram"); }
                       else setOpen({ kind: "post", i: i - 1 });
                     }}
-                    className="relative flex aspect-square items-center justify-center"
+                    className="relative flex aspect-square items-center justify-center overflow-hidden"
                     style={{ background: "#0d0d0d" }}
                   >
-                    <SlideVisual
-                      kind={t.carousel ? IG_CAROUSEL[0].visual : IG_POSTS[i - 1].visual}
-                      className="h-[74%] w-[74%]"
+                    {/* The tile shows the finished slide, scaled — which is
+                        what a grid thumbnail actually is. */}
+                    <SlideCard
+                      slide={
+                        t.carousel
+                          ? IG_CAROUSEL[0]
+                          : { n: i, copy: IG_POSTS[i - 1].caption, visual: IG_POSTS[i - 1].visual }
+                      }
                     />
                     {t.carousel && (
                       <span className="absolute top-1.5 right-1.5" style={{ color: FG }} aria-hidden="true">
@@ -279,8 +284,14 @@ function PostView({
         <DotsIcon color={FG} />
       </div>
 
-      <div className="relative flex aspect-square items-center justify-center p-8" style={{ background: "#0d0d0d" }}>
-        <SlideVisual kind={item.visual} className="max-h-full w-full" />
+      <div className="relative" style={{ background: "#0d0d0d" }}>
+        <SlideCard
+          slide={
+            isCarousel
+              ? IG_CAROUSEL[slide]
+              : { n: open.i + 1, copy: (item as { caption: string }).caption, visual: item.visual }
+          }
+        />
         {isCarousel && (
           <>
             <span className="absolute top-3 right-3" style={{ background: "rgba(0,0,0,.6)", color: FG, fontSize: 12, fontWeight: 600, padding: "3px 9px", borderRadius: 12 }}>
@@ -329,13 +340,20 @@ function PostView({
         </div>
       )}
 
+      {/* The caption is the campaign copy, not a repeat of the slide line —
+          the line is already on the card, and restating it under every post
+          is exactly the repetition a real account avoids. */}
       <div className="px-3.5 pt-2.5 pb-4" style={{ color: FG, fontSize: 13.5, lineHeight: 1.45 }}>
         <div style={{ fontWeight: 600 }}>{isLiked ? "1,241" : "1,240"} likes</div>
         <div className="mt-1">
           <span style={{ fontWeight: 600, marginRight: 6 }}>{IG_PROFILE.handle.replace("@", "")}</span>
-          {"copy" in item ? item.copy : item.caption}
+          {isCarousel
+            ? "Six things nobody tells you about sending money abroad. Swipe →"
+            : (item as { caption: string }).caption}
         </div>
-        {"sub" in item && item.sub && <div style={{ color: DIM, marginTop: 4 }}>{item.sub}</div>}
+        <div style={{ color: "#E0F1FF", marginTop: 4 }}>
+          #CrossBorderPayments #ForeignExchange #SendMoney
+        </div>
         <div style={{ color: DIM, fontSize: 11, marginTop: 8, textTransform: "uppercase" }}>2 days ago</div>
       </div>
     </div>

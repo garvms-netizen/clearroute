@@ -14,6 +14,8 @@
  * separately, clearly marked as such.
  */
 
+import { BANK_SETTLEMENT_TIME, SETTLEMENT_TIME } from "./settlement";
+
 export const SEND_INR = 500_000;
 
 /** INR per 1 USD. */
@@ -71,8 +73,15 @@ export const BANK_USD = round2(SEND_INR / BANK_RATE);
 export const DIFFERENCE_USD = round2(LEG1_USD - BANK_USD);
 
 export const HOPS = { leg1: 2, leg2: 1, session: 3 } as const;
-export const HOURS = { leg1: "~4 hours", leg2: "~2 hours" } as const;
-export const BANK_SETTLEMENT = "2–5 days";
+/**
+ * Settlement windows, imported rather than restated.
+ *
+ * These used to read "~4 hours", which contradicted the real-time claim on
+ * every page they appeared on. lib/settlement.ts is now the only place any
+ * duration is written down.
+ */
+export const HOURS = { leg1: SETTLEMENT_TIME, leg2: "~45 sec" } as const;
+export const BANK_SETTLEMENT = BANK_SETTLEMENT_TIME;
 
 /**
  * The transaction map, §9.3 step 4.
