@@ -45,7 +45,10 @@ export function InstagramApp() {
   const tiles = [{ carousel: true }, ...IG_POSTS.map(() => ({ carousel: false }))];
 
   return (
-    <div className="mx-auto w-full" style={{ maxWidth: 390 }}>
+    // min() rather than a flat 390: the shell plus its 10px border exceeds a
+    // 360px viewport, so on the narrowest phones the mockup has to shrink to
+    // the column instead of pushing the page sideways.
+    <div className="mx-auto w-full" style={{ maxWidth: "min(390px, 100%)" }}>
       {/* Device shell */}
       <div
         style={{

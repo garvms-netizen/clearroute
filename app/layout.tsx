@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter, IBM_Plex_Mono } from "next/font/google";
 import Script from "next/script";
 import { ModeProvider } from "@/components/ModeProvider";
+import { JsonLd } from "@/components/shell/JsonLd";
+import { SITE_URL } from "@/lib/routes";
 import { SiteChrome } from "@/components/shell/SiteChrome";
 import "./globals.css";
 
@@ -29,6 +31,21 @@ export const metadata: Metadata = {
   description:
     "Cross-border payments with nothing hidden — live rates, minimal intermediaries, full transaction tracking, and multi-currency transfers in one session.",
   applicationName: "Clear Route",
+  metadataBase: new URL(SITE_URL),
+  openGraph: {
+    type: "website",
+    siteName: "Clear Route",
+    title: "Clear Route — See every step your money takes. Every time.",
+    description:
+      "Cross-border payments with nothing hidden — live rates, minimal intermediaries, full transaction tracking, and multi-currency transfers in one session.",
+    images: [{ url: "/og.png", width: 1200, height: 630, alt: "Clear Route" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Clear Route — See every step your money takes.",
+    description: "Cross-border payments with nothing hidden.",
+    images: ["/og.png"],
+  },
   /**
    * Site-wide noindex while the project is under construction.
    *
@@ -99,6 +116,7 @@ export default function RootLayout({
         />
       </head>
       <body className="min-h-full flex flex-col">
+        <JsonLd />
         <ModeProvider>
           <SiteChrome>{children}</SiteChrome>
         </ModeProvider>

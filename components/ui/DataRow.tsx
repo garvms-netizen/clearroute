@@ -49,9 +49,13 @@ export function DataRow({
           </span>
         )}
       </dt>
+      {/* min-w-0 rather than shrink-0. Short mono figures never wrap anyway,
+          but a long prose value in a shrink-0 box cannot break — one such row
+          measured 403px inside a 360px viewport and pushed the whole page
+          sideways. */}
       <dd
         className={cn(
-          "mono shrink-0 text-right text-sm",
+          "mono min-w-0 text-right text-sm text-pretty",
           strong && "text-base font-medium",
         )}
         style={{ color: accent ? "var(--accent-ink)" : "var(--text)" }}

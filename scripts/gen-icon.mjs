@@ -67,4 +67,32 @@ writeFileSync(join(ROOT, "public", "clearroute.ico"), ico);
 writeFileSync(join(ROOT, "app", "favicon.ico"), ico);
 writeFileSync(join(ROOT, "public", "icon.png"), png);
 
-console.log(`Wrote public/clearroute.ico, app/favicon.ico and public/icon.png (${SIZE}px)`);
+/**
+ * Open Graph card, 1200x630.
+ *
+ * Drawn here rather than screenshotted: the mark, the wordmark and the
+ * tagline composed on the brand ground, with the same one-bend route line the
+ * hero uses. Text is real SVG type, so it stays crisp and never garbles the
+ * way a generated image would.
+ */
+const og = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#0B1220"/>
+  <g opacity="0.28">
+    <path d="M0 470 L520 470 L1200 250" stroke="#00B8A9" stroke-width="3" fill="none"/>
+  </g>
+  <g transform="translate(80, 96) scale(1.5)">
+    <path d="M6 30 L30 30 L54 6" stroke="#00B8A9" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <circle cx="6" cy="30" r="6" fill="#E4E9F2"/>
+    <circle cx="30" cy="30" r="6" fill="#00B8A9"/>
+    <circle cx="54" cy="6" r="6" fill="#E4E9F2"/>
+  </g>
+  <text x="80" y="300" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="76" font-weight="700" fill="#E4E9F2" letter-spacing="-2">Clear Route</text>
+  <text x="80" y="386" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="40" font-weight="600" fill="#00B8A9" letter-spacing="-1">See every step your money takes.</text>
+  <text x="80" y="440" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="40" font-weight="600" fill="#00B8A9" letter-spacing="-1">Every time.</text>
+  <text x="80" y="546" font-family="IBM Plex Mono, Consolas, monospace" font-size="22" fill="#8B99B0">Cross-border payments · fictional company · academic project</text>
+</svg>`;
+
+const ogPng = await sharp(Buffer.from(og)).png().toBuffer();
+writeFileSync(join(ROOT, "public", "og.png"), ogPng);
+
+console.log(`Wrote clearroute.ico, favicon.ico, icon.png (${SIZE}px) and og.png (1200x630)`);

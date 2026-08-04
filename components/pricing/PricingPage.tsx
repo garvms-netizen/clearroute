@@ -111,8 +111,10 @@ export function PricingPage() {
           lede="A typical bank route against Clear Route on an identical transfer. We never name a competitor — the comparison is to the ordinary path money takes."
         />
 
+        {/* Stacks below sm: two columns of mono figures do not fit 360px, and
+            the values were spilling past the viewport. */}
         <div
-          className="mt-8 grid grid-cols-2 gap-px"
+          className="mt-8 grid grid-cols-1 gap-px sm:grid-cols-2"
           style={{ background: "var(--line)", border: "1px solid var(--line)" }}
         >
           {[

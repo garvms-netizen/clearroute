@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
+import { Breadcrumbs } from "./Breadcrumbs";
 import { isForkPath, stripBasePath } from "@/lib/mode";
 
 /**
@@ -27,6 +28,7 @@ export function SiteChrome({ children }: { children: React.ReactNode }) {
         Skip to content
       </a>
       <Header />
+      <Breadcrumbs />
       <main id="main" className="flex-1">
         {children}
       </main>
